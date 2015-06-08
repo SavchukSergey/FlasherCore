@@ -7,7 +7,6 @@
 #include "serial.h"
 
 
-
 void stk_avr_read_signature() {
 	serialPrint(STK_INSYNC);
 	unsigned char high = spi_transaction(0x30, 0x00, 0x00, 0x00);

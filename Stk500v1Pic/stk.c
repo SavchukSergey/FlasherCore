@@ -20,12 +20,12 @@ unsigned char target = STK_TARGET_PIC;
 
 parameter param;
 
-unsigned char getch() {
+static unsigned char getch() {
 	while (!serialAvailable());
 	return serialRead();
 }
 
-void breply(unsigned char b) {
+static void breply(unsigned char b) {
 	if (CRC_EOP == getch()) {
 		serialPrint(STK_INSYNC);
 		serialPrint((char)b);
@@ -38,14 +38,14 @@ void breply(unsigned char b) {
 }
 
 
-void fill(int n) {
+static void fill(int n) {
 	for (int x = 0; x < n; x++) {
 		buff[x] = getch();
 	}
 }
 
 #define PTIME 30
-void pulse(int times) {
+static void pulse(int times) {
 	do {
 		stk_pin_led_1();
 		_delay_ms(PTIME);
@@ -55,7 +55,7 @@ void pulse(int times) {
 	while (times--);
 }
 
-void empty_reply() {
+static void empty_reply() {
 	if (CRC_EOP == getch()) {
 		serialPrint(STK_INSYNC);
 		serialPrint(STK_OK);
@@ -65,22 +65,21 @@ void empty_reply() {
 	}
 }
 
-void stk_read_signature() {
+static void stk_read_signature() {
 	if (CRC_EOP != getch()) {
 		error++;
 		serialPrint((char) STK_NOSYNC);
-		return;
-	}
-
-	if (target == STK_TARGET_AVR) {
-		stk_avr_read_signature();
 	} else {
-		stk_pic_read_signature();
+		if (target == STK_TARGET_AVR) {
+			stk_avr_read_signature();
+		} else {
+			stk_pic_read_signature();
+		}
 	}
 }
 
-void stk_set_parameters() {
-	// call this after reading paramter packet into buff[]
+static void stk_set_parameters() {
+	// call this after reading parameter packet into buff[]
 	param.devicecode = buff[0];
 	param.revision   = buff[1];
 	param.progtype   = buff[2];
@@ -104,7 +103,7 @@ void stk_set_parameters() {
 
 }
 
-void stk_start_pmode() {
+static void stk_start_pmode() {
 	pulse(5);
 	if (target == STK_TARGET_AVR) {
 		stk_avr_start_pmode();
@@ -114,7 +113,7 @@ void stk_start_pmode() {
 	pmode = 1;
 }
 
-void stk_end_pmode() {
+static void stk_end_pmode() {
 	if (target == STK_TARGET_AVR) {
 		stk_avr_end_pmode();
 	} else {
@@ -123,7 +122,7 @@ void stk_end_pmode() {
 	pmode = 0;
 }
 
-void stk_get_version(unsigned char c) {
+static void stk_get_version(unsigned char c) {
 	switch (c) {
 		case 0x80:
 			breply(HWVER);
@@ -143,7 +142,7 @@ void stk_get_version(unsigned char c) {
 	}
 }
 
-void stk_universal() {
+static void stk_universal() {
 	fill(4);
 	unsigned char res;
 	
@@ -156,7 +155,7 @@ void stk_universal() {
 	breply(res);
 }
 
-void stk_flash(int addr, int data) {
+static void stk_flash(int addr, int data) {
 	if (target == STK_TARGET_AVR) {
 		stk_avr_write_flash(addr, data);
 	} else {
@@ -164,7 +163,7 @@ void stk_flash(int addr, int data) {
 	}
 }
 
-void stk_commit(int addr) {
+static void stk_commit(int addr) {
 	if (target == STK_TARGET_AVR) {
 		stk_avr_commit(addr);
 	} else {
@@ -172,7 +171,7 @@ void stk_commit(int addr) {
 	}
 }
 
-int stk_current_page(int addr) {
+static int stk_current_page(int addr) {
 	if (param.pagesize == 32)  return here & 0xFFFFFFF0;
 	if (param.pagesize == 64)  return here & 0xFFFFFFE0;
 	if (param.pagesize == 128) return here & 0xFFFFFFC0;
@@ -180,7 +179,7 @@ int stk_current_page(int addr) {
 	return here;
 }
 
-unsigned char stk_write_flash_pages(unsigned int length) {
+static unsigned char stk_write_flash_pages(unsigned int length) {
 	unsigned int x = 0;
 	unsigned int page = stk_current_page(here);
 	while (x < length) {
@@ -199,7 +198,7 @@ unsigned char stk_write_flash_pages(unsigned int length) {
 	return STK_OK;
 }
 
-void stk_write_flash(int length) {
+static void stk_write_flash(int length) {
 	fill(length);
 	if (CRC_EOP == getch()) {
 		serialPrint(STK_INSYNC);
@@ -213,12 +212,12 @@ void stk_write_flash(int length) {
 #define EECHUNK (32)
 
 // write (length) bytes, (start) is a byte address
-unsigned char stk_write_eeprom_chunk(int start, int length) {
+static unsigned char stk_write_eeprom_chunk(unsigned int start, unsigned int length) {
 	// this writes byte-by-byte,
 	// page writing may be faster (4 bytes at a time)
 	fill(length);
-	for (int x = 0; x < length; x++) {
-		int addr = start + x;
+	for (unsigned int x = 0; x < length; x++) {
+		unsigned int addr = start + x;
 		if (target == STK_TARGET_AVR) {
 			stk_avr_write_eeprom(addr, buff[x]);
 		} else {
@@ -228,10 +227,10 @@ unsigned char stk_write_eeprom_chunk(int start, int length) {
 	return STK_OK;
 }
 
-unsigned char stk_write_eeprom(int length) {
+static unsigned char stk_write_eeprom(int length) {
 	// here is a word address, get the byte address
-	int start = here * 2;
-	int remaining = length;
+	unsigned int start = here * 2;
+	unsigned int remaining = length;
 	if (length > param.eepromsize) {
 		error++;
 		return STK_FAILED;
@@ -245,7 +244,7 @@ unsigned char stk_write_eeprom(int length) {
 	return STK_OK;
 }
 
-void stk_program_page() {
+static void stk_program_page() {
 	unsigned char result = STK_FAILED;
 	unsigned int length = 256 * getch();
 	length += getch();
@@ -266,7 +265,7 @@ void stk_program_page() {
 	}
 }
 
-unsigned int stk_flash_read(unsigned int addr) {
+static unsigned int stk_flash_read(unsigned int addr) {
 	if (target == STK_TARGET_AVR) {
 		return stk_avr_flash_read(addr);
 	} else {
@@ -274,7 +273,7 @@ unsigned int stk_flash_read(unsigned int addr) {
 	}
 }
 
-unsigned char stk_eeprom_read(unsigned int addr) {
+static unsigned char stk_eeprom_read(unsigned int addr) {
 	if (target == STK_TARGET_AVR) {
 		return stk_avr_eeprom_read(addr);
 	} else {
@@ -282,7 +281,7 @@ unsigned char stk_eeprom_read(unsigned int addr) {
 	}
 }
 
-unsigned char stk_flash_read_page(unsigned int length) {
+static unsigned char stk_flash_read_page(unsigned int length) {
 	for (unsigned int x = 0; x < length; x += 2) {
 		unsigned int val = stk_flash_read(here);
 		serialPrint((char) (val >> 8));
@@ -292,7 +291,7 @@ unsigned char stk_flash_read_page(unsigned int length) {
 	return STK_OK;
 }
 
-unsigned char stk_eeprom_read_page(unsigned int length) {
+static unsigned char stk_eeprom_read_page(unsigned int length) {
 	// here again we have a word address
 	unsigned int start = here * 2;
 	for (unsigned int x = 0; x < length; x++) {
@@ -303,7 +302,7 @@ unsigned char stk_eeprom_read_page(unsigned int length) {
 	return STK_OK;
 }
 
-void stk_read_page() {
+static void stk_read_page() {
 	unsigned char result = STK_FAILED;
 	unsigned int length = 256 * getch();
 	length += getch();
@@ -319,7 +318,7 @@ void stk_read_page() {
 	}
 }
 
-void avrisp() {
+static void avrisp() {
 	unsigned char ch = getch();
 	switch (ch) {
 		case '0':
@@ -403,7 +402,7 @@ void avrisp() {
 	}
 }
 
-void stk_heartbeat() {
+static void stk_heartbeat() {
 	stk_pin_led_1();
 	_delay_ms(10);
 	stk_pin_led_0();

@@ -18,7 +18,7 @@ inline static void pic_wait_dly2() {
 	_delay_us(1);
 }
 
-void pic_send_cmd (unsigned char cmd) {
+static void pic_send_cmd (unsigned char cmd) {
 	for (unsigned char i = 0; i < 6; i++) {
 		_delay_us(1);
 		pic_pin_clk_1();
@@ -33,7 +33,7 @@ void pic_send_cmd (unsigned char cmd) {
 	pic_pin_data_0();
 }
 
-void pic_send_data (unsigned int data) {
+static void pic_send_data (unsigned int data) {
 	data = data & 0x3fff;
 	data = data << 1;
 	for (unsigned char i = 0; i < 16; i++) {
@@ -50,7 +50,7 @@ void pic_send_data (unsigned int data) {
 	pic_pin_data_0();
 }
 
-unsigned int pic_receive_data () {
+static unsigned int pic_receive_data () {
 	unsigned int data = 0;
 	pic_pin_data_input();
 	pic_pin_data_1(); //turn on pull-up
