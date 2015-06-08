@@ -10,8 +10,6 @@ void spi_init() {
 }
 
 void spi_wait() {
-	do {
-	}
 	while (!(SPSR & (1 << SPIF)));
 }
 
