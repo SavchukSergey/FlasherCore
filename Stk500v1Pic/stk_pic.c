@@ -7,7 +7,7 @@
 #include "serial.h"
 
 unsigned int address = 0;
-//todo: increment address
+//to do: increment address
 
 void stk_pic_read_signature() {
 	serialPrint(STK_INSYNC);
@@ -18,6 +18,12 @@ void stk_pic_read_signature() {
 }
 
 unsigned char stk_pic_universal(unsigned char a, unsigned char b, unsigned char c, unsigned char d) {
+	if (a == 0xac) {
+		if (b == 0x80) {
+			pic_erase_program();
+			pic_erase_data();
+		}
+	}
 	return 0;
 }
 

@@ -17,6 +17,8 @@ void pic_increment_address();
 void go_to_program(unsigned int adr);
 void go_to_data(unsigned int adr);
 
+void pic_erase_program();
+void pic_erase_data();
 
 
 

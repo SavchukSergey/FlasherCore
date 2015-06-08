@@ -5,7 +5,16 @@
 #include "stk_pic.h"
 #include "stk_avr.h"
 
-unsigned char buff[256]; // global block storage
+#define BUFFER_SIZE 256
+unsigned char buff[BUFFER_SIZE]; // global block storage
+
+#define EECHUNK (32)
+
+#if EECHUNK >= BUFFER_SIZE
+#error "EECHUNK must be less than buffer size"
+#endif
+
+
 int error = 0;
 int pmode = 0;
 // address for reading and writing, set by 'U' command
@@ -28,18 +37,17 @@ static unsigned char getch() {
 static void breply(unsigned char b) {
 	if (CRC_EOP == getch()) {
 		serialPrint(STK_INSYNC);
-		serialPrint((char)b);
+		serialPrint(b);
 		serialPrint(STK_OK);
-	}
-	else {
+	} else {
 		error++;
 		serialPrint(STK_NOSYNC);
 	}
 }
 
 
-static void fill(int n) {
-	for (int x = 0; x < n; x++) {
+static void stk_fill(unsigned char n) {
+	for (unsigned char x = 0; x < n; x++) {
 		buff[x] = getch();
 	}
 }
@@ -143,7 +151,7 @@ static void stk_get_version(unsigned char c) {
 }
 
 static void stk_universal() {
-	fill(4);
+	stk_fill(4);
 	unsigned char res;
 	
 	if (target == STK_TARGET_AVR) {
@@ -155,7 +163,7 @@ static void stk_universal() {
 	breply(res);
 }
 
-static void stk_flash(int addr, int data) {
+static void stk_flash(unsigned int addr, int data) {
 	if (target == STK_TARGET_AVR) {
 		stk_avr_write_flash(addr, data);
 	} else {
@@ -163,7 +171,7 @@ static void stk_flash(int addr, int data) {
 	}
 }
 
-static void stk_commit(int addr) {
+static void stk_commit(unsigned int addr) {
 	if (target == STK_TARGET_AVR) {
 		stk_avr_commit(addr);
 	} else {
@@ -171,7 +179,7 @@ static void stk_commit(int addr) {
 	}
 }
 
-static int stk_current_page(int addr) {
+static unsigned int stk_current_page(unsigned int addr) {
 	if (param.pagesize == 32)  return here & 0xFFFFFFF0;
 	if (param.pagesize == 64)  return here & 0xFFFFFFE0;
 	if (param.pagesize == 128) return here & 0xFFFFFFC0;
@@ -198,24 +206,17 @@ static unsigned char stk_write_flash_pages(unsigned int length) {
 	return STK_OK;
 }
 
-static void stk_write_flash(int length) {
-	fill(length);
-	if (CRC_EOP == getch()) {
-		serialPrint(STK_INSYNC);
-		serialPrint(stk_write_flash_pages(length));
-	} else {
-		error++;
-		serialPrint(STK_NOSYNC);
-	}
+//to do: buffer may overflow. need to split by BUFFER_SIZE
+static unsigned char stk_write_flash(int length) {
+	stk_fill(length);
+	return stk_write_flash_pages(length);
 }
 
-#define EECHUNK (32)
-
 // write (length) bytes, (start) is a byte address
-static unsigned char stk_write_eeprom_chunk(unsigned int start, unsigned int length) {
+static unsigned char stk_write_eeprom_chunk(unsigned int start, unsigned char length) {
 	// this writes byte-by-byte,
 	// page writing may be faster (4 bytes at a time)
-	fill(length);
+	stk_fill(length);
 	for (unsigned int x = 0; x < length; x++) {
 		unsigned int addr = start + x;
 		if (target == STK_TARGET_AVR) {
@@ -250,18 +251,19 @@ static void stk_program_page() {
 	length += getch();
 	unsigned char memtype = getch();
 	if (memtype == 'F') {
-		stk_write_flash(length);
+		result = stk_write_flash(length);
 	} else if (memtype == 'E') {
 		result = stk_write_eeprom(length);
-		if (CRC_EOP == getch()) {
-			serialPrint(STK_INSYNC);
-			serialPrint(result);
-		} else {
-			error++;
-			serialPrint(STK_NOSYNC);
-		}
 	} else {
 		serialPrint(STK_FAILED);
+		return;
+	}
+	if (CRC_EOP == getch()) {
+		serialPrint(STK_INSYNC);
+		serialPrint(result);
+	} else {
+		error++;
+		serialPrint(STK_NOSYNC);
 	}
 }
 
@@ -336,12 +338,12 @@ static void avrisp() {
 			stk_get_version(getch());
 			break;
 		case 'B':
-			fill(20);
+			stk_fill(20);
 			stk_set_parameters();
 			empty_reply();
 			break;
 		case 'E': // extended parameters - ignore for now
-			fill(5);
+			stk_fill(5);
 			empty_reply();
 			break;
 		case 'P':
