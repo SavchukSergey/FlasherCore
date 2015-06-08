@@ -3,12 +3,12 @@
 
 #include <avr/io.h>
 
-#define F_CPU 16000000
+#define F_CPU 16000000UL
 #define STK_BAUD_RATE 57600
 
 #define STK_PIN_LED_PORT PORTB
 #define STK_PIN_LED_DDR DDRB
-#define STK_PIN_LED_BIT PORTB6
+#define STK_PIN_LED_BIT PORTB5
 
 
 

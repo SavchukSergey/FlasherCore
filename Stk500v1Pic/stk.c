@@ -30,7 +30,13 @@ unsigned char target = STK_TARGET_PIC;
 parameter param;
 
 static unsigned char getch() {
-	while (!serialAvailable());
+	static char cnt = 0;
+	cnt++;
+	if (cnt & 1) {
+		stk_pin_led_1();
+	} else {
+		stk_pin_led_0();
+	}
 	return serialRead();
 }
 
@@ -46,14 +52,14 @@ static void breply(unsigned char b) {
 }
 
 
-static void stk_fill(unsigned char n) {
-	for (unsigned char x = 0; x < n; x++) {
+static void stk_fill(unsigned int n) {
+	for (unsigned int x = 0; x < n; x++) {
 		buff[x] = getch();
 	}
 }
 
-#define PTIME 30
-static void pulse(int times) {
+#define PTIME 10
+static void pulse(unsigned char times) {
 	do {
 		stk_pin_led_1();
 		_delay_ms(PTIME);
@@ -76,7 +82,7 @@ static void empty_reply() {
 static void stk_read_signature() {
 	if (CRC_EOP != getch()) {
 		error++;
-		serialPrint((char) STK_NOSYNC);
+		serialPrint(STK_NOSYNC);
 	} else {
 		if (target == STK_TARGET_AVR) {
 			stk_avr_read_signature();
@@ -207,7 +213,7 @@ static unsigned char stk_write_flash_pages(unsigned int length) {
 }
 
 //to do: buffer may overflow. need to split by BUFFER_SIZE
-static unsigned char stk_write_flash(int length) {
+static unsigned char stk_write_flash(unsigned int length) {
 	stk_fill(length);
 	return stk_write_flash_pages(length);
 }
@@ -299,7 +305,7 @@ static unsigned char stk_eeprom_read_page(unsigned int length) {
 	for (unsigned int x = 0; x < length; x++) {
 		unsigned int addr = start + x;
 		unsigned char ee = stk_eeprom_read(addr);
-		serialPrint((char) ee);
+		serialPrint(ee);
 	}
 	return STK_OK;
 }
@@ -404,13 +410,6 @@ static void avrisp() {
 	}
 }
 
-static void stk_heartbeat() {
-	stk_pin_led_1();
-	_delay_ms(10);
-	stk_pin_led_0();
-	_delay_ms(10);
-}
-
 void stk_setup() {
 	serialBegin(STK_BAUD_RATE);
 
@@ -420,9 +419,10 @@ void stk_setup() {
 
 void stk_loop() {
 	while (1) {
-		stk_heartbeat();
 		if (serialAvailable()) {
+			stk_pin_led_1();
 			avrisp();
+			stk_pin_led_0();
 		}
 	}
 }

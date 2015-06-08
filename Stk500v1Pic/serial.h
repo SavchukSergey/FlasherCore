@@ -8,8 +8,9 @@ unsigned char serialRead();
 void serialPrintString(char* chrs);
 void serialPrint(unsigned char chr);
 
-#ifndef UBRRH
+#ifndef UBRR
 
+#define UBRR UBRR0
 #define UBRRH UBRR0H
 #define UBRRL UBRR0L
 #define UCSRB UCSR0B

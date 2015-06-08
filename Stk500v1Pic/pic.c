@@ -2,6 +2,8 @@
 #include <util/delay.h>
 #include "pic.h"
 
+unsigned int address = 0;
+
 inline static void pic_wait_erase() {
 	_delay_ms(6);
 }
@@ -107,6 +109,7 @@ void pic_begin_programming_data() {
 void pic_increment_address() {
 	pic_send_cmd(0x06);
 	pic_wait_dly2();
+	address++;
 }
 
 unsigned int pic_read_program() {
@@ -129,4 +132,30 @@ void pic_erase_program() {
 void pic_erase_data() {
 	pic_send_cmd(0x0b);
 	pic_wait_erase();
+}
+
+void pic_reset() {
+	pic_pin_clk_output();
+	pic_pin_data_output();
+	pic_pin_mclr_output();
+	pic_pin_power_output();
+
+	pic_pin_power_1();
+	_delay_ms(500);
+	pic_pin_mclr_1();
+	_delay_us(100);
+	pic_pin_power_0();
+	address = 0;
+}
+
+void pic_go_to_program(unsigned int adr) {
+	while ((address & 0x7ff) != (adr & 0x7ff)) {
+		pic_increment_address();
+	}
+}
+
+void pic_go_to_data(unsigned int adr) {
+	while ((address & 0x7f) != (adr & 0x7f)) {
+		pic_increment_address();
+	}
 }

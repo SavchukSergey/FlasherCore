@@ -20,8 +20,10 @@ void go_to_data(unsigned int adr);
 void pic_erase_program();
 void pic_erase_data();
 
+void pic_reset();
 
-
+void pic_go_to_program(unsigned int adr);
+void pic_go_to_data(unsigned int adr);
 
 #define PIC_PIN_DATA_OR_MASK (1 << PIC_PIN_DATA_BIT)
 #define PIC_PIN_DATA_AND_MASK (~PIC_PIN_DATA_OR_MASK)
