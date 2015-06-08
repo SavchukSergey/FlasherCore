@@ -58,7 +58,7 @@ void pulse(int times) {
 void empty_reply() {
 	if (CRC_EOP == getch()) {
 		serialPrint(STK_INSYNC);
-		serialPrint((char)STK_OK);
+		serialPrint(STK_OK);
 	} else {
 		error++;
 		serialPrint(STK_NOSYNC);
@@ -172,7 +172,6 @@ void stk_commit(int addr) {
 	}
 }
 
-//#define _current_page(x) (here & 0xFFFFE0)
 int stk_current_page(int addr) {
 	if (param.pagesize == 32)  return here & 0xFFFFFFF0;
 	if (param.pagesize == 64)  return here & 0xFFFFFFE0;
@@ -181,18 +180,16 @@ int stk_current_page(int addr) {
 	return here;
 }
 
-
-
-unsigned char stk_write_flash_pages(int length) {
-	int x = 0;
-	int page = stk_current_page(here);
+unsigned char stk_write_flash_pages(unsigned int length) {
+	unsigned int x = 0;
+	unsigned int page = stk_current_page(here);
 	while (x < length) {
 		if (page != stk_current_page(here)) {
 			stk_commit(page);
 			page = stk_current_page(here);
 		}
-		int val = buff[x+1] * 256 + buff[x];
-		x+=2;
+		unsigned int val = buff[x+1] * 256 + buff[x];
+		x += 2;
 		stk_flash(here, val);
 		here++;
 	}
@@ -206,7 +203,7 @@ void stk_write_flash(int length) {
 	fill(length);
 	if (CRC_EOP == getch()) {
 		serialPrint(STK_INSYNC);
-		serialPrint((char) stk_write_flash_pages(length));
+		serialPrint(stk_write_flash_pages(length));
 	} else {
 		error++;
 		serialPrint(STK_NOSYNC);
@@ -249,30 +246,27 @@ unsigned char stk_write_eeprom(int length) {
 }
 
 void stk_program_page() {
-	char result = (char) STK_FAILED;
-	int length = 256 * getch();
+	unsigned char result = STK_FAILED;
+	unsigned int length = 256 * getch();
 	length += getch();
-	char memtype = getch();
-	// flash memory @here, (length) bytes
+	unsigned char memtype = getch();
 	if (memtype == 'F') {
 		stk_write_flash(length);
-		return;
-	}
-	if (memtype == 'E') {
-		result = (char)stk_write_eeprom(length);
+	} else if (memtype == 'E') {
+		result = stk_write_eeprom(length);
 		if (CRC_EOP == getch()) {
-			serialPrint((char) STK_INSYNC);
+			serialPrint(STK_INSYNC);
 			serialPrint(result);
 		} else {
 			error++;
-			serialPrint((char) STK_NOSYNC);
+			serialPrint(STK_NOSYNC);
 		}
-		return;
+	} else {
+		serialPrint(STK_FAILED);
 	}
-	serialPrint((char)STK_FAILED);
 }
 
-unsigned int stk_flash_read(int addr) {
+unsigned int stk_flash_read(unsigned int addr) {
 	if (target == STK_TARGET_AVR) {
 		return stk_avr_flash_read(addr);
 	} else {
@@ -280,7 +274,7 @@ unsigned int stk_flash_read(int addr) {
 	}
 }
 
-unsigned char stk_eeprom_read(int addr) {
+unsigned char stk_eeprom_read(unsigned int addr) {
 	if (target == STK_TARGET_AVR) {
 		return stk_avr_eeprom_read(addr);
 	} else {
@@ -288,9 +282,9 @@ unsigned char stk_eeprom_read(int addr) {
 	}
 }
 
-char stk_flash_read_page(int length) {
-	for (int x = 0; x < length; x += 2) {
-		int val = stk_flash_read(here);
+unsigned char stk_flash_read_page(unsigned int length) {
+	for (unsigned int x = 0; x < length; x += 2) {
+		unsigned int val = stk_flash_read(here);
 		serialPrint((char) (val >> 8));
 		serialPrint((char) (val & 0xff));
 		here++;
@@ -298,11 +292,11 @@ char stk_flash_read_page(int length) {
 	return STK_OK;
 }
 
-char stk_eeprom_read_page(int length) {
+unsigned char stk_eeprom_read_page(unsigned int length) {
 	// here again we have a word address
-	int start = here * 2;
-	for (int x = 0; x < length; x++) {
-		int addr = start + x;
+	unsigned int start = here * 2;
+	for (unsigned int x = 0; x < length; x++) {
+		unsigned int addr = start + x;
 		unsigned char ee = stk_eeprom_read(addr);
 		serialPrint((char) ee);
 	}
@@ -310,20 +304,19 @@ char stk_eeprom_read_page(int length) {
 }
 
 void stk_read_page() {
-	char result = (char)STK_FAILED;
-	int length = 256 * getch();
+	unsigned char result = STK_FAILED;
+	unsigned int length = 256 * getch();
 	length += getch();
-	char memtype = getch();
+	unsigned char memtype = getch();
 	if (CRC_EOP != getch()) {
 		error++;
-		serialPrint((char) STK_NOSYNC);
-		return;
+		serialPrint(STK_NOSYNC);
+	} else {
+		serialPrint(STK_INSYNC);
+		if (memtype == 'F') result = stk_flash_read_page(length);
+		if (memtype == 'E') result = stk_eeprom_read_page(length);
+		serialPrint(result);
 	}
-	serialPrint((char) STK_INSYNC);
-	if (memtype == 'F') result = stk_flash_read_page(length);
-	if (memtype == 'E') result = stk_eeprom_read_page(length);
-	serialPrint(result);
-	return;
 }
 
 void avrisp() {
