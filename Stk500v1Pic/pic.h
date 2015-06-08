@@ -57,7 +57,7 @@ inline void pic_pin_data_input() {
 }
 
 inline unsigned char pic_pin_data_value() {
-	return (PIC_PIN_DATA_PORT & PIC_PIN_DATA_OR_MASK);
+	return (PIC_PIN_DATA_PIN & PIC_PIN_DATA_OR_MASK);
 }
 
 
