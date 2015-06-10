@@ -2,7 +2,12 @@
 #include <util/delay.h>
 #include "pic.h"
 
+#define PIC_ADDRESS_SPACE_PROGRAM = 'P'
+#define PIC_ADDRESS_SPACE_DATA = 'D'
+#define PIC_ADDRESS_SPACE_CONFIG = 'C'
+
 unsigned int address = 0;
+unsigned char address_space;
 
 inline static void pic_wait_erase() {
 	_delay_ms(6);
@@ -20,17 +25,30 @@ inline static void pic_wait_dly2() {
 	_delay_us(1);
 }
 
+inline static void pic_send_bit(unsigned char val) {
+	_delay_us(1);
+	pic_pin_clk_1();
+	if (val) {
+		pic_pin_data_1();
+	} else {
+		pic_pin_data_0();
+	}
+	_delay_us(1);
+	pic_pin_clk_0();
+}
+
+inline static unsigned char pic_receive_bit() {
+	pic_pin_clk_1();
+	pic_wait_dly2();
+	pic_pin_clk_0();
+	pic_wait_dly2();
+	return pic_pin_data_value();
+}
+
 static void pic_send_cmd (unsigned char cmd) {
 	for (unsigned char i = 0; i < 6; i++) {
-		_delay_us(1);
-		pic_pin_clk_1();
-		if ((cmd & 0x01) != 0) {
-			pic_pin_data_1();
-		} else {
-			pic_pin_data_0();
-		}
+		pic_send_bit(cmd & 0x01);
 		cmd = cmd >> 1;
-		pic_pin_clk_0();
 	}
 	pic_pin_data_0();
 }
@@ -39,15 +57,8 @@ static void pic_send_data (unsigned int data) {
 	data = data & 0x3fff;
 	data = data << 1;
 	for (unsigned char i = 0; i < 16; i++) {
-		_delay_us(1);
-		pic_pin_clk_1();
-		if ((data & 0x01) != 0){
-			pic_pin_data_1();
-		} else {
-			pic_pin_data_0();
-		}
+		pic_send_bit(data & 0x01);
 		data = data >> 1;
-		pic_pin_clk_0();
 	}
 	pic_pin_data_0();
 }
@@ -58,12 +69,8 @@ static unsigned int pic_receive_data () {
 	pic_pin_data_1(); //turn on pull-up
 
 	for (unsigned char i = 0; i < 16; i++) {
-		pic_pin_clk_1();
-		pic_wait_dly2();
-		pic_pin_clk_0();
-		pic_wait_dly2();
 		data = data >> 1;
-		if (pic_pin_data_value()) {
+		if (pic_receive_bit()) {
 			data |= 0x8000;
 		} else {
 			data &= 0x7fff;
@@ -156,6 +163,12 @@ void pic_go_to_program(unsigned int adr) {
 
 void pic_go_to_data(unsigned int adr) {
 	while ((address & 0x7f) != (adr & 0x7f)) {
+		pic_increment_address();
+	}
+}
+
+void pic_go_to_config(unsigned int adr) {
+	while ((address & 0x0f) != (adr & 0x0f)) {
 		pic_increment_address();
 	}
 }
