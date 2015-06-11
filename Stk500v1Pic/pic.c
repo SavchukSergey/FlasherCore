@@ -2,12 +2,11 @@
 #include <util/delay.h>
 #include "pic.h"
 
-#define PIC_ADDRESS_SPACE_PROGRAM = 'P'
-#define PIC_ADDRESS_SPACE_DATA = 'D'
-#define PIC_ADDRESS_SPACE_CONFIG = 'C'
+#define PIC_ADDRESS_SPACE_PROGRAM 'P'
+#define PIC_ADDRESS_SPACE_CONFIG 'C'
 
-unsigned int address = 0;
-unsigned char address_space;
+unsigned int address;
+unsigned char pic_address_space;
 
 inline static void pic_wait_erase() {
 	_delay_ms(6);
@@ -82,6 +81,20 @@ static unsigned int pic_receive_data () {
 	return data;
 }
 
+unsigned int pic_universal_read(unsigned char cmd) {
+	pic_send_cmd(cmd);
+	pic_wait_dly2();
+	return pic_receive_data();	
+}
+
+void pic_universal_write(unsigned char cmd, unsigned int data) {
+	pic_send_cmd(cmd);
+	pic_wait_dly2();
+	pic_send_data(data);
+	_delay_us(10);
+}
+
+
 void pic_load_program(unsigned int data) {
 	pic_send_cmd(0x02);
 	pic_wait_dly2();
@@ -96,11 +109,12 @@ void pic_load_data(unsigned char data) {
 	_delay_us(10);
 }
 
-void pic_load_config(unsigned char data) {
+void pic_load_config(unsigned int data) {
 	pic_send_cmd(0x00);
 	pic_wait_dly2();
 	pic_send_data(data);
 	_delay_us(10);
+	pic_address_space = PIC_ADDRESS_SPACE_CONFIG;
 }
 
 void pic_begin_programming_program() {
@@ -152,10 +166,15 @@ void pic_reset() {
 	pic_pin_mclr_1();
 	_delay_us(100);
 	pic_pin_power_0();
+	
 	address = 0;
+	pic_address_space = PIC_ADDRESS_SPACE_PROGRAM;
 }
 
 void pic_go_to_program(unsigned int adr) {
+	if (pic_address_space == PIC_ADDRESS_SPACE_CONFIG) {
+		pic_reset();
+	}
 	while ((address & 0x7ff) != (adr & 0x7ff)) {
 		pic_increment_address();
 	}
@@ -167,8 +186,11 @@ void pic_go_to_data(unsigned int adr) {
 	}
 }
 
-void pic_go_to_config(unsigned int adr) {
-	while ((address & 0x0f) != (adr & 0x0f)) {
+void pic_go_to_config(unsigned int addr) {
+	if (pic_address_space != PIC_ADDRESS_SPACE_CONFIG) {
+		pic_load_config(0x3ff);
+	}
+	while ((address & 0x7ff) != (addr & 0x7ff)) {
 		pic_increment_address();
 	}
 }

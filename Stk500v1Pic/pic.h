@@ -8,14 +8,12 @@ void pic_begin_programming_data();
 
 void pic_load_program(unsigned int data);
 void pic_load_data(unsigned char data);
+void pic_load_config(unsigned int data);
 
 unsigned int pic_read_program();
 unsigned char pic_read_data();
 
 void pic_increment_address();
-
-void go_to_program(unsigned int adr);
-void go_to_data(unsigned int adr);
 
 void pic_erase_program();
 void pic_erase_data();
@@ -24,6 +22,10 @@ void pic_reset();
 
 void pic_go_to_program(unsigned int adr);
 void pic_go_to_data(unsigned int adr);
+void pic_go_to_config(unsigned int adr);
+
+unsigned int pic_universal_read(unsigned char cmd);
+void pic_universal_write(unsigned char cmd, unsigned int data);
 
 #define PIC_PIN_DATA_OR_MASK (1 << PIC_PIN_DATA_BIT)
 #define PIC_PIN_DATA_AND_MASK (~PIC_PIN_DATA_OR_MASK)
