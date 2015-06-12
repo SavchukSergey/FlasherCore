@@ -1,7 +1,7 @@
 #ifndef STK_AVR_H_
 #define STK_AVR_H_
 
-#include "settings.h"
+#include "../settings.h"
 
 void stk_avr_read_signature();
 unsigned char stk_avr_universal(unsigned char a, unsigned char b, unsigned char c, unsigned char d);

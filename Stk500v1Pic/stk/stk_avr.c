@@ -1,10 +1,10 @@
-#include "settings.h"
+#include "../settings.h"
 #include <avr/io.h>
 #include <util/delay.h>
-#include "avr.h"
+#include "../avr.h"
 #include "stk.h"
 #include "stk_avr.h"
-#include "serial.h"
+#include "../serial.h"
 
 
 void stk_avr_read_signature() {

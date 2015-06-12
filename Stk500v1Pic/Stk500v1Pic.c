@@ -1,5 +1,5 @@
 #include <avr/io.h>
-#include "stk.h"
+#include "stk/stk.h"
 
 int main() {
 	stk_setup();

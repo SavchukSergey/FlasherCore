@@ -1,7 +1,7 @@
 #ifndef STK_H_
 #define STK_H_
 
-#include "settings.h"
+#include "../settings.h"
 
 #define STK_LED_HEARBEAT 13
 
