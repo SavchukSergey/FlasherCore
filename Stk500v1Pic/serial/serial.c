@@ -1,4 +1,4 @@
-#include "settings.h"
+#include "../settings.h"
 #include "serial.h"
 #include <avr/io.h>
 #include <math.h>

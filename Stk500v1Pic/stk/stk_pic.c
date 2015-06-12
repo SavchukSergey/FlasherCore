@@ -4,7 +4,7 @@
 #include "stk.h"
 #include "stk_pic.h"
 #include "../pic.h"
-#include "../serial.h"
+#include "../serial/serial.h"
 
 void stk_pic_read_signature() {
 	serialPrint(STK_INSYNC);

@@ -122,10 +122,10 @@
     <Compile Include="pic.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="serial.c">
+    <Compile Include="serial\serial.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="serial.h">
+    <Compile Include="serial\serial.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="settings.h">
@@ -154,6 +154,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="serial" />
     <Folder Include="stk" />
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />

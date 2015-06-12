@@ -1,7 +1,7 @@
 #include "../settings.h"
 #include <util/delay.h>
 #include "stk.h"
-#include "../serial.h"
+#include "../serial/serial.h"
 #include "stk_pic.h"
 #include "stk_avr.h"
 

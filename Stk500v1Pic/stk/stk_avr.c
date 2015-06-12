@@ -4,7 +4,7 @@
 #include "../avr.h"
 #include "stk.h"
 #include "stk_avr.h"
-#include "../serial.h"
+#include "../serial/serial.h"
 
 
 void stk_avr_read_signature() {
