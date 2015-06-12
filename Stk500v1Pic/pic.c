@@ -109,13 +109,11 @@ void pic_load_program(unsigned int data) {
 void pic_load_data(unsigned char data) {
 	pic_send_cmd(0x03);
 	pic_send_data(data);
-	pic_wait_dly2();
 }
 
 void pic_load_config(unsigned int data) {
 	pic_send_cmd(0x00);
 	pic_send_data(data);
-	pic_wait_dly2();
 	pic_address_space = PIC_ADDRESS_SPACE_CONFIG;
 }
 
