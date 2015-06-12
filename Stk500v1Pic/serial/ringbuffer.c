@@ -18,6 +18,7 @@ void ring_buffer_queue(ringbuffer* buffer, unsigned char val) {
 					buffer->tail = 0;
 				}
 				buffer->size++;
+				return;
 			}
 		}
 	}

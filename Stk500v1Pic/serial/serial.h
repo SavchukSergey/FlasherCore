@@ -25,6 +25,7 @@ void serialPrint(unsigned char chr);
 #define UDRE UDRE0
 #define RXCIE RXCIE0
 #define TXCIE TXCIE0
+#define UDRIE UDRIE0
 
 #endif
 

@@ -12,7 +12,7 @@ void serialBegin(unsigned int baudRate) {
 	unsigned int ubbrValue = lrint((F_CPU / (16ul * baudRate)) - 1);
 	UBRR = ubbrValue;
 	//enable the receiver an transmitter, enable interrupts
-	UCSRB = (1 << RXEN) | (1 << TXEN) || (1 << RXCIE);
+	UCSRB = (1 << RXEN) | (1 << TXEN) | (1 << RXCIE);
 	//asynchronous, no parity, 8 bits, 1 stop bit
 	UCSRC = (3 << UCSZ0);
 	//to do: for atmega8 use URSEL?
@@ -31,7 +31,7 @@ unsigned char serialRead() {
 
 void serialPrint(unsigned char chr) {
 	ring_buffer_queue(&transmitBuffer, chr);
-	UCSRB |= (1 << TXCIE);
+	UCSRB |= (1 << UDRIE);
 }
 
 void serialPrintString(char* chrs) {
@@ -48,11 +48,11 @@ ISR(USART_RX_vect) {
 	}
 }
 
-ISR(USART_TX_vect) {
+ISR(USART_UDRE_vect) {
 	if (transmitBuffer.size > 0) {
 		unsigned char ch = ring_buffer_dequeue(&transmitBuffer);
 		UDR = ch;
 	} else {
-		UCSRB &= ~(1 << TXCIE);
+		UCSRB &= ~(1 << UDRIE);
 	}
 }
