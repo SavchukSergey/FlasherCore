@@ -16,6 +16,9 @@ void serialBegin(unsigned int baudRate) {
 	//asynchronous, no parity, 8 bits, 1 stop bit
 	UCSRC = (3 << UCSZ0);
 	//to do: for atmega8 use URSEL?
+	
+	ring_buffer_reset(&receiveBuffer);
+	ring_buffer_reset(&transmitBuffer);
 }
 
 unsigned char serialAvailable() {

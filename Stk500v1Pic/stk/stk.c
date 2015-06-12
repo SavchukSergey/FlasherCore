@@ -5,15 +5,7 @@
 #include "stk_pic.h"
 #include "stk_avr.h"
 
-#define BUFFER_SIZE 256
-unsigned char buff[BUFFER_SIZE]; // global block storage
-
 #define EECHUNK (32)
-
-#if EECHUNK >= BUFFER_SIZE
-#error "EECHUNK must be less than buffer size"
-#endif
-
 
 int error = 0;
 int pmode = 0;
@@ -23,9 +15,6 @@ int here;
 #define STK_TARGET_PIC 'P'
 #define STK_TARGET_AVR 'A'
 unsigned char target = STK_TARGET_PIC;
-
-#define beget16(addr) (*addr * 256 + *(addr+1) )
-
 
 parameter param;
 
@@ -51,12 +40,6 @@ static void breply(unsigned char b) {
 	}
 }
 
-
-static void stk_fill(unsigned int n) {
-	for (unsigned int x = 0; x < n; x++) {
-		buff[x] = getch();
-	}
-}
 
 #define PTIME 10
 static void pulse(unsigned char times) {
@@ -92,29 +75,48 @@ static void stk_read_signature() {
 	}
 }
 
+static unsigned int stk_read_beget16() {
+	unsigned int res = serialRead();
+	res <<= 8;
+	res |= serialRead();
+	return res;
+}
+
+static unsigned long stk_read_beget32() {
+	unsigned long res = serialRead();
+	res <<= 8;
+	res |= serialRead();
+	res <<= 8;
+	res |= serialRead();
+	res <<= 8;
+	res |= serialRead();
+	return res;
+}
+
 static void stk_set_parameters() {
-	// call this after reading parameter packet into buff[]
-	param.devicecode = buff[0];
-	param.revision   = buff[1];
-	param.progtype   = buff[2];
-	param.parmode    = buff[3];
-	param.polling    = buff[4];
-	param.selftimed  = buff[5];
-	param.lockbytes  = buff[6];
-	param.fusebytes  = buff[7];
-	param.flashpoll  = buff[8];
-	// ignore buff[9] (= buff[8])
-	// following are 16 bits (big endian)
-	param.eeprompoll = beget16(&buff[10]);
-	param.pagesize   = beget16(&buff[12]);
-	param.eepromsize = beget16(&buff[14]);
+	param.devicecode = serialRead();
+	param.revision   = serialRead();
+	param.progtype   = serialRead();
+	param.parmode    = serialRead();
+	param.polling    = serialRead();
+	param.selftimed  = serialRead();
+	param.lockbytes  = serialRead();
+	param.fusebytes  = serialRead();
+	param.flashpoll  = serialRead();
+	serialRead();
+	param.eeprompoll = stk_read_beget16();
+	param.pagesize   = stk_read_beget16();
+	param.eepromsize = stk_read_beget16();
+	param.flashsize = stk_read_beget32();
+	empty_reply();
+}
 
-	// 32 bits flashsize (big endian)
-	param.flashsize = buff[16] * 0x01000000
-	+ buff[17] * 0x00010000
-	+ buff[18] * 0x00000100
-	+ buff[19];
-
+static void stk_set_ext_parameters() {
+	unsigned char len = serialRead();
+	for (unsigned char i = 1; i < len; i++) {
+		serialRead();
+	}
+	empty_reply();
 }
 
 static void stk_start_pmode() {
@@ -157,13 +159,17 @@ static void stk_get_version(unsigned char c) {
 }
 
 static void stk_universal() {
-	stk_fill(4);
+	unsigned char a = serialRead();
+	unsigned char b = serialRead();
+	unsigned char c = serialRead();
+	unsigned char d = serialRead();
+
 	unsigned char res;
 	
 	if (target == STK_TARGET_AVR) {
-		res = stk_avr_universal(buff[0], buff[1], buff[2], buff[3]);
+		res = stk_avr_universal(a, b, c, d);
 	} else {
-		res = stk_pic_universal(buff[0], buff[1], buff[2], buff[3]);
+		res = stk_pic_universal(a, b, c, d);
 	}
 	
 	breply(res);
@@ -193,7 +199,7 @@ static unsigned int stk_current_page(unsigned int addr) {
 	return here;
 }
 
-static unsigned char stk_write_flash_pages(unsigned int length) {
+static unsigned char stk_write_flash(unsigned int length) {
 	unsigned int x = 0;
 	unsigned int page = stk_current_page(here);
 	while (x < length) {
@@ -201,7 +207,8 @@ static unsigned char stk_write_flash_pages(unsigned int length) {
 			stk_commit(page);
 			page = stk_current_page(here);
 		}
-		unsigned int val = buff[x+1] * 256 + buff[x];
+		unsigned int val = serialRead();
+		val |= serialRead() * 256;
 		x += 2;
 		stk_flash(here, val);
 		here++;
@@ -212,23 +219,17 @@ static unsigned char stk_write_flash_pages(unsigned int length) {
 	return STK_OK;
 }
 
-//to do: buffer may overflow. need to split by BUFFER_SIZE
-static unsigned char stk_write_flash(unsigned int length) {
-	stk_fill(length);
-	return stk_write_flash_pages(length);
-}
-
 // write (length) bytes, (start) is a byte address
 static unsigned char stk_write_eeprom_chunk(unsigned int start, unsigned char length) {
 	// this writes byte-by-byte,
 	// page writing may be faster (4 bytes at a time)
-	stk_fill(length);
 	for (unsigned int x = 0; x < length; x++) {
 		unsigned int addr = start + x;
+		unsigned char data = serialRead();
 		if (target == STK_TARGET_AVR) {
-			stk_avr_write_eeprom(addr, buff[x]);
+			stk_avr_write_eeprom(addr, data);
 		} else {
-			stk_pic_write_eeprom(addr, buff[x]);
+			stk_pic_write_eeprom(addr, data);
 		}
 	}
 	return STK_OK;
@@ -344,13 +345,10 @@ static void avrisp() {
 			stk_get_version(getch());
 			break;
 		case 'B':
-			stk_fill(20);
 			stk_set_parameters();
-			empty_reply();
 			break;
 		case 'E': // extended parameters - ignore for now
-			stk_fill(5);
-			empty_reply();
+			stk_set_ext_parameters();
 			break;
 		case 'P':
 			stk_start_pmode();
