@@ -1,6 +1,7 @@
 #ifndef SERIAL_H_
 #define SERIAL_H_
 
+#include "ringbuffer.h"
 
 void serialBegin(unsigned int baudRate);
 unsigned char serialAvailable();
@@ -22,6 +23,8 @@ void serialPrint(unsigned char chr);
 #define UCSRA UCSR0A
 #define UDR UDR0
 #define UDRE UDRE0
+#define RXCIE RXCIE0
+#define TXCIE TXCIE0
 
 #endif
 

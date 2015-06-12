@@ -122,6 +122,12 @@
     <Compile Include="pic.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="serial\ringbuffer.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="serial\ringbuffer.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="serial\serial.c">
       <SubType>compile</SubType>
     </Compile>
