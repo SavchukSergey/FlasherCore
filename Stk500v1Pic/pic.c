@@ -13,35 +13,42 @@ inline static void pic_wait_erase() {
 }
 
 inline static void pic_wait_prog() {
-	_delay_ms(4);
+	_delay_ms(8);
 }
 
-inline static void pic_wait_dprog() {
-	_delay_ms(4);
-}
-
+//Delay between clock? to clock? of next command or data
 inline static void pic_wait_dly2() {
-	_delay_us(1);
+	asm("nop");
 }
 
-inline static void pic_send_bit(unsigned char val) {
-	_delay_us(1);
+//Clock? to data out valid (during read data)
+inline void pic_wait_dly3() {
+	asm("nop");
+}
+
+inline void pic_delay_bit() {
+	asm("nop");
+}
+
+inline void pic_send_bit(unsigned char val) {
 	pic_pin_clk_1();
 	if (val) {
 		pic_pin_data_1();
 	} else {
 		pic_pin_data_0();
 	}
-	_delay_us(1);
+	pic_delay_bit();
 	pic_pin_clk_0();
+	pic_delay_bit();
 }
 
-inline static unsigned char pic_receive_bit() {
+inline unsigned char pic_receive_bit() {
 	pic_pin_clk_1();
-	pic_wait_dly2();
+	pic_wait_dly3();
+	unsigned char val = pic_pin_data_value();
 	pic_pin_clk_0();
-	pic_wait_dly2();
-	return pic_pin_data_value();
+	pic_delay_bit();
+	return val;
 }
 
 static void pic_send_cmd (unsigned char cmd) {
@@ -50,6 +57,7 @@ static void pic_send_cmd (unsigned char cmd) {
 		cmd = cmd >> 1;
 	}
 	pic_pin_data_0();
+	pic_wait_dly2();
 }
 
 static void pic_send_data (unsigned int data) {
@@ -60,6 +68,7 @@ static void pic_send_data (unsigned int data) {
 		data = data >> 1;
 	}
 	pic_pin_data_0();
+	pic_wait_dly2();
 }
 
 static unsigned int pic_receive_data () {
@@ -83,65 +92,50 @@ static unsigned int pic_receive_data () {
 
 unsigned int pic_universal_read(unsigned char cmd) {
 	pic_send_cmd(cmd);
-	pic_wait_dly2();
 	return pic_receive_data();	
 }
 
 void pic_universal_write(unsigned char cmd, unsigned int data) {
 	pic_send_cmd(cmd);
-	pic_wait_dly2();
 	pic_send_data(data);
-	_delay_us(10);
 }
 
 
 void pic_load_program(unsigned int data) {
 	pic_send_cmd(0x02);
-	pic_wait_dly2();
 	pic_send_data(data);
-	_delay_us(10);
 }
 
 void pic_load_data(unsigned char data) {
 	pic_send_cmd(0x03);
-	pic_wait_dly2();
 	pic_send_data(data);
-	_delay_us(10);
+	pic_wait_dly2();
 }
 
 void pic_load_config(unsigned int data) {
 	pic_send_cmd(0x00);
-	pic_wait_dly2();
 	pic_send_data(data);
-	_delay_us(10);
+	pic_wait_dly2();
 	pic_address_space = PIC_ADDRESS_SPACE_CONFIG;
 }
 
-void pic_begin_programming_program() {
+void pic_begin_programming() {
 	pic_send_cmd(0x08);
 	pic_wait_prog();
 }
 
-void pic_begin_programming_data() {
-	pic_send_cmd(0x08);
-	pic_wait_dprog();
-}
-
 void pic_increment_address() {
 	pic_send_cmd(0x06);
-	pic_wait_dly2();
 	address++;
 }
 
 unsigned int pic_read_program() {
 	pic_send_cmd(0x04);
-	pic_wait_dly2();
 	return pic_receive_data();
 }
 
 unsigned char pic_read_data() {
 	pic_send_cmd(0x05);
-	pic_wait_dly2();
 	return (unsigned char)pic_receive_data();
 }
 

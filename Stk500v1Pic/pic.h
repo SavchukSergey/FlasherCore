@@ -3,12 +3,11 @@
 
 #include "settings.h"
 
-void pic_begin_programming_program();
-void pic_begin_programming_data();
-
 void pic_load_program(unsigned int data);
 void pic_load_data(unsigned char data);
 void pic_load_config(unsigned int data);
+
+void pic_begin_programming();
 
 unsigned int pic_read_program();
 unsigned char pic_read_data();

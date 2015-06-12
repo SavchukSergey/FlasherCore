@@ -70,7 +70,7 @@ void stk_pic_write_flash(unsigned int addr, unsigned int val) {
 	} else {
 		pic_load_program(val);
 	}	
-	pic_begin_programming_program();
+	pic_begin_programming();
 }
 
 unsigned char stk_pic_eeprom_read(unsigned int addr) {
@@ -81,6 +81,6 @@ unsigned char stk_pic_eeprom_read(unsigned int addr) {
 void stk_pic_write_eeprom(unsigned int addr, unsigned char val) {
 	pic_go_to_data(addr);
 	pic_load_data(val);
-	pic_begin_programming_data();
+	pic_begin_programming();
 }
 
