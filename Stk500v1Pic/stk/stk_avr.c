@@ -69,3 +69,28 @@ void stk_avr_write_flash(unsigned int addr, unsigned int val) {
 	spi_transaction(0x40, addr >> 8 & 0xFF, addr & 0xFF, (unsigned char)(val));
 	spi_transaction(0x48, addr >> 8 & 0xFF, addr & 0xFF, (unsigned char)(val >> 8));
 }
+
+void stk_avr_service() {
+	serialPrintString("Hello. Avr Service Mode ");
+	
+	while (1) {
+		char ch = serialRead();
+		if (ch == 'P') {
+			stk_avr_start_pmode();
+		} else if (ch == 'Q') {
+			stk_avr_end_pmode();
+		} else if (ch == 'E') {
+			return;
+		} else if (ch == ' ') {
+			serialPrint(' ');
+		} else if (ch == 'U') {
+			spi_init();
+			unsigned char a = serialReadHexUInt8();
+			unsigned char b = serialReadHexUInt8();
+			unsigned char c = serialReadHexUInt8();
+			unsigned char d = serialReadHexUInt8();
+			unsigned char res = spi_transaction(a, b, c, d);
+			serialPrintHexUInt8(res);
+		}
+	}
+}

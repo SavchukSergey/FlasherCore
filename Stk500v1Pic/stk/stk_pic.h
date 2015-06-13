@@ -2,8 +2,6 @@
 #define STK_PIC_H_
 
 
-
-
 void stk_pic_service();
 
 void stk_pic_read_signature();
@@ -18,5 +16,6 @@ void stk_pic_write_flash(unsigned int addr, unsigned int val);
 void stk_pic_write_eeprom(unsigned int addr, unsigned char val);
 
 void stk_pic_commit(unsigned int addr);
+
 
 #endif

@@ -18,13 +18,15 @@ void pic_erase_program();
 void pic_erase_data();
 
 void pic_reset();
+void pic_switch_to_config();
 
 void pic_go_to_program(unsigned int adr);
 void pic_go_to_data(unsigned int adr);
 void pic_go_to_config(unsigned int adr);
 
-unsigned int pic_universal_read(unsigned char cmd);
-void pic_universal_write(unsigned char cmd, unsigned int data);
+unsigned int pic_get_address();
+unsigned char pic_get_address_space();
+
 
 #define PIC_PIN_DATA_OR_MASK (1 << PIC_PIN_DATA_BIT)
 #define PIC_PIN_DATA_AND_MASK (~PIC_PIN_DATA_OR_MASK)

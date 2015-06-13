@@ -334,7 +334,15 @@ static void stk_read_page() {
 }
 
 static void stk_service() {
-	stk_pic_service();
+	unsigned char ch = serialRead();
+	switch (ch) {
+		case 'P':
+			stk_pic_service();
+			break;
+		case 'A':
+			stk_avr_service();
+			break;
+	}
 }
 
 static void avrisp() {

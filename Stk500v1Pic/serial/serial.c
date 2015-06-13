@@ -60,12 +60,24 @@ void serialPrintHexDigit(char ch) {
 	}
 }
 
+void serialPrintHexUInt8(unsigned char data) {
+	serialPrintHexDigit(data >> 4);
+	serialPrintHexDigit(data >> 0);
+}
 
 void serialPrintHexUInt16(unsigned int data) {
 	serialPrintHexDigit(data >> 12);
 	serialPrintHexDigit(data >> 8);
 	serialPrintHexDigit(data >> 4);
 	serialPrintHexDigit(data >> 0);
+}
+
+unsigned char serialReadHexUInt8() {
+	unsigned char res = 0;
+	res |= serialReadHexDigit();
+	res = res << 4;
+	res |= serialReadHexDigit();
+	return res;
 }
 
 unsigned int serialReadHexUInt16() {

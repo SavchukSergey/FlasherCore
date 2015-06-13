@@ -3,6 +3,8 @@
 
 #include "../settings.h"
 
+void stk_avr_service();
+
 void stk_avr_read_signature();
 unsigned char stk_avr_universal(unsigned char a, unsigned char b, unsigned char c, unsigned char d);
 void stk_avr_start_pmode();

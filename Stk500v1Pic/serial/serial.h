@@ -10,8 +10,10 @@ void serialPrintString(char* chrs);
 void serialPrint(unsigned char chr);
 
 char serialReadHexDigit();
+unsigned char serialReadHexUInt8();
 unsigned int serialReadHexUInt16();
 void serialPrintHexUInt16(unsigned int data);
+void serialPrintHexUInt8(unsigned char data);
 
 #ifndef UBRR
 

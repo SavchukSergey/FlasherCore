@@ -23,16 +23,6 @@ unsigned char stk_pic_universal(unsigned char a, unsigned char b, unsigned char 
 		}
 	}
 	
-	if (a >= 0x80) {
-		pic_universal_write(a, (c << 8) | b);
-	} else {
-		unsigned int res = pic_universal_read(a);
-		if (a >= 0x40) {
-			return res >> 8;
-		} else {
-			return res;
-		}
-	}
 	return 0;
 }
 
@@ -83,14 +73,12 @@ void stk_pic_write_eeprom(unsigned int addr, unsigned char val) {
 }
 
 void stk_print_hex_uint16(unsigned int data) {
-	serialPrintString("0x");
 	serialPrintHexUInt16(data);
 	serialPrintString(" ");
 }
 
 void stk_pic_service() {
 	serialPrintString("Hello. Pic Service Mode ");
-	stk_print_hex_uint16(0x1234);
 	
 	while (1) {
 		char ch = serialRead();
@@ -98,8 +86,12 @@ void stk_pic_service() {
 			stk_pic_start_pmode();
 		} else if (ch == 'Q') {
 			stk_pic_end_pmode();
+		} else if (ch == 'E') {
+			return;
+		} else if (ch == ' ') {
+			serialPrint(' ');
 		} else if (ch == 'C') {
-			pic_load_config(0x1111);
+			pic_switch_to_config();
 		} else if (ch == 'I') {
 			pic_increment_address();
 		} else if (ch == 'R') {
@@ -110,8 +102,14 @@ void stk_pic_service() {
 			stk_print_hex_uint16(data);
 			pic_load_program(data);
 			pic_begin_programming();
-		} else if (ch == 'E') {
-			return;
+		} else if (ch == 'G') {
+			unsigned int adr = serialReadHexUInt16();
+			stk_pic_go_to(adr);
+		} else if (ch == 'A') {
+			unsigned char sp = pic_get_address_space();
+			serialPrint(sp);
+			unsigned int adr = pic_get_address();
+			stk_print_hex_uint16(adr);
 		}
 	}
 } 
