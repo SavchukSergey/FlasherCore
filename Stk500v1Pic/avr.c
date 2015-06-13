@@ -3,6 +3,8 @@
 #include "avr.h"
 
 void spi_init() {
+	avr_pin_ss_output();
+	
 	unsigned char x;
 	SPCR = 0x53;
 	x = SPSR;

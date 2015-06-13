@@ -21,6 +21,9 @@ unsigned char spi_transaction(unsigned char a, unsigned char b, unsigned char c,
 #define AVR_PIN_MISO_OR_MASK (1 << AVR_PIN_MISO_BIT)
 #define AVR_PIN_MISO_AND_MASK (~AVR_PIN_MISO_OR_MASK)
 
+#define AVR_PIN_SS_OR_MASK (1 << AVR_PIN_SS_BIT)
+#define AVR_PIN_SS_AND_MASK (~AVR_PIN_SS_OR_MASK)
+
 
 inline void avr_pin_reset_0() {
 	AVR_PIN_RESET_PORT &= AVR_PIN_RESET_AND_MASK;
@@ -88,6 +91,23 @@ inline void avr_pin_miso_output() {
 
 inline void avr_pin_miso_input() {
 	AVR_PIN_MISO_DDR &= AVR_PIN_MISO_AND_MASK;
+}
+
+
+inline void avr_pin_ss_0() {
+	AVR_PIN_SS_PORT &= AVR_PIN_SS_AND_MASK;
+}
+
+inline void avr_pin_ss_1() {
+	AVR_PIN_SS_PORT |= AVR_PIN_SS_OR_MASK;
+}
+
+inline void avr_pin_ss_output() {
+	AVR_PIN_SS_DDR |= AVR_PIN_SS_OR_MASK;
+}
+
+inline void avr_pin_ss_input() {
+	AVR_PIN_SS_DDR &= AVR_PIN_SS_AND_MASK;
 }
 
 #endif

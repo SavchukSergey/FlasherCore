@@ -14,7 +14,7 @@ int here;
 
 #define STK_TARGET_PIC 'P'
 #define STK_TARGET_AVR 'A'
-unsigned char target = STK_TARGET_PIC;
+unsigned char target = STK_TARGET_AVR;
 
 parameter param;
 
@@ -109,6 +109,12 @@ static void stk_set_parameters() {
 	param.eepromsize = stk_read_beget16();
 	param.flashsize = stk_read_beget32();
 	empty_reply();
+	
+	if (param.devicecode == 0x01) {
+		target = STK_TARGET_PIC;
+	} else {
+		target = STK_TARGET_AVR;
+	}
 }
 
 static void stk_set_ext_parameters() {

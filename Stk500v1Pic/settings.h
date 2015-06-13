@@ -54,5 +54,8 @@
 #define AVR_PIN_MOSI_DDR DDRB
 #define AVR_PIN_MOSI_BIT PORTB3
 
+#define AVR_PIN_SS_PORT PORTB
+#define AVR_PIN_SS_DDR DDRB
+#define AVR_PIN_SS_BIT PORTB2
 
 #endif
