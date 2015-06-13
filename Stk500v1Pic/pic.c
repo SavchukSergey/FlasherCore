@@ -19,14 +19,54 @@ inline static void pic_wait_prog() {
 //Delay between clock? to clock? of next command or data
 inline static void pic_wait_dly2() {
 	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
 }
 
 //Clock? to data out valid (during read data)
 inline void pic_wait_dly3() {
 	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
 }
 
 inline void pic_delay_bit() {
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
 	asm("nop");
 }
 
@@ -74,7 +114,7 @@ static void pic_send_data (unsigned int data) {
 static unsigned int pic_receive_data () {
 	unsigned int data = 0;
 	pic_pin_data_input();
-	pic_pin_data_1(); //turn on pull-up
+	pic_pin_data_0(); //turn off pull-up
 
 	for (unsigned char i = 0; i < 16; i++) {
 		data = data >> 1;
@@ -154,6 +194,7 @@ void pic_reset() {
 	pic_pin_power_output();
 
 	pic_pin_power_1();
+	pic_pin_mclr_0();
 	_delay_ms(500);
 	pic_pin_mclr_1();
 	_delay_us(100);
@@ -181,6 +222,7 @@ void pic_go_to_data(unsigned int adr) {
 void pic_go_to_config(unsigned int addr) {
 	if (pic_address_space != PIC_ADDRESS_SPACE_CONFIG) {
 		pic_load_config(0x3ff);
+		address = 0;
 	}
 	while ((address & 0x7ff) != (addr & 0x7ff)) {
 		pic_increment_address();

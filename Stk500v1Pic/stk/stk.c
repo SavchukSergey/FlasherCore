@@ -333,6 +333,10 @@ static void stk_read_page() {
 	}
 }
 
+static void stk_service() {
+	stk_pic_service();
+}
+
 static void avrisp() {
 	unsigned char ch = getch();
 	switch (ch) {
@@ -395,6 +399,10 @@ static void avrisp() {
 
 		case 0x75: //STK_READ_SIGN 'u'
 			stk_read_signature();
+			break;
+			
+		case 'S':
+			stk_service();
 			break;
 
 		// expecting a command, not CRC_EOP

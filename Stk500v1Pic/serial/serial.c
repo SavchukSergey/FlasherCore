@@ -41,6 +41,47 @@ void serialPrintString(char* chrs) {
 	}
 }
 
+char serialReadHexDigit() {
+	char ch = serialRead();
+	if (ch >= '0' && ch <= '9') return ch - '0';
+	if (ch >= 'A' && ch <= 'F') return ch - 'A' + 10;
+	if (ch >= 'a' && ch <= 'f') return ch - 'a' + 10;
+	return 0;
+}
+
+void serialPrintHexDigit(char ch) {
+	ch = ch & 0x0f;
+	if (ch >= 0 && ch <= 9) {
+		serialPrint(ch + '0');
+	} else if (ch <= 15) {
+		serialPrint(ch - 10 + 'A');
+	} else {
+		serialPrint('-');
+	}
+}
+
+
+void serialPrintHexUInt16(unsigned int data) {
+	serialPrintHexDigit(data >> 12);
+	serialPrintHexDigit(data >> 8);
+	serialPrintHexDigit(data >> 4);
+	serialPrintHexDigit(data >> 0);
+}
+
+unsigned int serialReadHexUInt16() {
+	unsigned int res = 0;
+	res |= serialReadHexDigit();
+	res = res << 4;
+	res |= serialReadHexDigit();
+	res = res << 4;
+	res |= serialReadHexDigit();
+	res = res << 4;
+	res |= serialReadHexDigit();
+	return res;
+}
+
+
+
 ISR(USART_RX_vect) {
 	unsigned char ch = UDR;
 	if (receiveBuffer.size < RING_BUFFER_SIZE) {

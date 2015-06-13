@@ -4,6 +4,7 @@
 
 
 
+void stk_pic_service();
 
 void stk_pic_read_signature();
 unsigned char stk_pic_universal(unsigned char a, unsigned char b, unsigned char c, unsigned char d);

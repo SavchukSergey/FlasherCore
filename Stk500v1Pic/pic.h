@@ -35,7 +35,7 @@ void pic_universal_write(unsigned char cmd, unsigned int data);
 #define PIC_PIN_MCLR_OR_MASK (1 << PIC_PIN_MCLR_PORT_BIT)
 #define PIC_PIN_MCLR_AND_MASK (~PIC_PIN_MCLR_OR_MASK)
 
-#define PIC_PIN_POWER_OR_MASK (1 << PIC_PIN_MCLR_PORT_BIT)
+#define PIC_PIN_POWER_OR_MASK (1 << PIC_PIN_POWER_PORT_BIT)
 #define PIC_PIN_POWER_AND_MASK (~PIC_PIN_POWER_OR_MASK)
 
 
