@@ -299,8 +299,8 @@ static unsigned char stk_eeprom_read(unsigned int addr) {
 static unsigned char stk_flash_read_page(unsigned int length) {
 	for (unsigned int x = 0; x < length; x += 2) {
 		unsigned int val = stk_flash_read(here);
-		serialPrint((char) (val >> 8));
 		serialPrint((char) (val & 0xff));
+		serialPrint((char) (val >> 8));
 		here++;
 	}
 	return STK_OK;
