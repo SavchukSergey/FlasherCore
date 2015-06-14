@@ -1,7 +1,7 @@
 #ifndef SERIAL_H_
 #define SERIAL_H_
 
-#include "ringbuffer.h"
+#include <avr/io.h>
 
 void serialBegin(unsigned int baudRate);
 unsigned char serialAvailable();
@@ -15,7 +15,7 @@ unsigned int serialReadHexUInt16();
 void serialPrintHexUInt16(unsigned int data);
 void serialPrintHexUInt8(unsigned char data);
 
-#ifndef UBRR
+#ifndef UDR
 
 #define UBRR UBRR0
 #define UBRRH UBRR0H
@@ -33,6 +33,10 @@ void serialPrintHexUInt8(unsigned char data);
 #define TXCIE TXCIE0
 #define UDRIE UDRIE0
 
+#endif
+
+#ifndef USART_RX_vect
+#define USART_RX_vect USART_RXC_vect
 #endif
 
 #endif

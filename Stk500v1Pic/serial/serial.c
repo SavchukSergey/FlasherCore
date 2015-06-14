@@ -10,11 +10,23 @@ ringbuffer transmitBuffer;
 
 void serialBegin(unsigned int baudRate) {
 	unsigned int ubbrValue = lrint((F_CPU / (16ul * baudRate)) - 1);
+
+	#ifndef URSEL
 	UBRR = ubbrValue;
+	#else
+	UBRRH = (ubbrValue >> 8);
+	UBRRL = ubbrValue & 0xff;
+	#endif
+	
 	//enable the receiver an transmitter, enable interrupts
 	UCSRB = (1 << RXEN) | (1 << TXEN) | (1 << RXCIE);
 	//asynchronous, no parity, 8 bits, 1 stop bit
+
+	#ifndef URSEL
 	UCSRC = (3 << UCSZ0);
+	#else
+	UCSRC = (1 << URSEL) | (3 << UCSZ0);
+	#endif
 	//to do: for atmega8 use URSEL?
 	
 	ring_buffer_reset(&receiveBuffer);
