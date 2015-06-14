@@ -80,6 +80,7 @@ void stk_avr_service() {
 		} else if (ch == 'Q') {
 			stk_avr_end_pmode();
 		} else if (ch == 'E') {
+			serialPrintString("Bye");
 			return;
 		} else if (ch == ' ') {
 			serialPrint(' ');

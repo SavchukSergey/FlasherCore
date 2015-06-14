@@ -87,6 +87,7 @@ void stk_pic_service() {
 		} else if (ch == 'Q') {
 			stk_pic_end_pmode();
 		} else if (ch == 'E') {
+			serialPrintString("Bye");
 			return;
 		} else if (ch == ' ') {
 			serialPrint(' ');
@@ -110,6 +111,20 @@ void stk_pic_service() {
 			serialPrint(sp);
 			unsigned int adr = pic_get_address();
 			stk_print_hex_uint16(adr);
+		} else if (ch == 'p') {
+			unsigned char powerPin = serialRead();
+			if (powerPin == '0') {
+				pic_pin_power_0();
+			} else if (powerPin == '1') {
+				pic_pin_power_1();
+			}
+		} else if (ch == 'm') {
+			unsigned char mclrPin = serialRead();
+			if (mclrPin == '0') {
+				pic_pin_mclr_0();
+			} else if (mclrPin == '1') {
+				pic_pin_mclr_1();
+			}
 		}
 	}
 } 
