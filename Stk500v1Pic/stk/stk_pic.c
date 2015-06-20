@@ -6,6 +6,10 @@
 #include "../pic.h"
 #include "../serial/serial.h"
 
+void stk_pic_setup() {
+	pic_setup();
+}
+
 void stk_pic_read_signature() {
 	serialPrint(STK_INSYNC);
 	serialPrint(PIC_SIGNATURE_HIGH);
@@ -33,10 +37,8 @@ void stk_pic_start_pmode() {
 void stk_pic_end_pmode() {
 	pic_pin_clk_input();
 	pic_pin_data_input();
-//	pic_pin_mclr_input();
 	pic_pin_mclr_0();
-	pic_pin_mclr_output();
-	pic_pin_power_input();
+	pic_pin_power_1();
 }
 
 void stk_pic_commit(unsigned int addr) {

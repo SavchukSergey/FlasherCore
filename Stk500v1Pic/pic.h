@@ -17,6 +17,7 @@ void pic_increment_address();
 void pic_erase_program();
 void pic_erase_data();
 
+void pic_setup();
 void pic_reset();
 void pic_switch_to_config();
 

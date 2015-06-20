@@ -62,7 +62,7 @@ unsigned char stk_avr_eeprom_read(unsigned int addr) {
 
 void stk_avr_write_eeprom(unsigned int addr, unsigned char val) {
 	spi_transaction(0xC0, (addr >> 8) & 0xFF, addr & 0xFF, val);
-	_delay_ms(45);
+	_delay_ms(9);
 }
 
 void stk_avr_write_flash(unsigned int addr, unsigned int val) {

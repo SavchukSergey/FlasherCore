@@ -176,14 +176,22 @@ void pic_erase_data() {
 	pic_wait_erase();
 }
 
+void pic_setup() {
+	pic_pin_mclr_output();
+	pic_pin_mclr_0();
+
+	pic_pin_power_output();
+	pic_pin_power_1();
+
+	pic_pin_clk_input();
+	pic_pin_data_input();
+}
+
 void pic_reset() {
+	pic_setup();
 	pic_pin_clk_output();
 	pic_pin_data_output();
-	pic_pin_mclr_output();
-	pic_pin_power_output();
 
-	pic_pin_power_1();
-	pic_pin_mclr_0();
 	_delay_ms(500);
 	pic_pin_mclr_1();
 	_delay_us(100);

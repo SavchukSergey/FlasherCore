@@ -1,7 +1,7 @@
 #ifndef STK_PIC_H_
 #define STK_PIC_H_
 
-
+void stk_pic_setup();
 void stk_pic_service();
 
 void stk_pic_read_signature();

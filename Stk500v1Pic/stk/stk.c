@@ -241,20 +241,18 @@ static unsigned char stk_write_eeprom_chunk(unsigned int start, unsigned char le
 	return STK_OK;
 }
 
-static unsigned char stk_write_eeprom(int length) {
+static unsigned char stk_write_eeprom(unsigned int length) {
 	// here is a word address, get the byte address
 	unsigned int start = here * 2;
 	unsigned int remaining = length;
-	if (length > param.eepromsize) {
-		error++;
-		return STK_FAILED;
-	}
 	while (remaining > EECHUNK) {
 		stk_write_eeprom_chunk(start, EECHUNK);
 		start += EECHUNK;
 		remaining -= EECHUNK;
 	}
-	stk_write_eeprom_chunk(start, remaining);
+	if (remaining > 0) {
+		stk_write_eeprom_chunk(start, remaining);
+	}
 	return STK_OK;
 }
 
@@ -432,7 +430,7 @@ static void avrisp() {
 
 void stk_setup() {
 	serialBegin(STK_BAUD_RATE);
-
+	stk_pic_setup();
 	stk_pin_led_output();
 	pulse(2);
 }
