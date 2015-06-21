@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Atmel Studio Solution File, Format Version 11.00
-Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "Stk500v1Pic", "Stk500v1Pic\Stk500v1Pic.cproj", "{4E00BA1F-CC9F-4742-938E-9BB6469783CD}"
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "FlasherCore", "FlasherCore\FlasherCore.cproj", "{4E00BA1F-CC9F-4742-938E-9BB6469783CD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

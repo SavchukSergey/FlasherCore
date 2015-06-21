@@ -13,7 +13,7 @@
     <OutputFileExtension>.elf</OutputFileExtension>
     <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
     <AssemblyName>Stk500v1Pic</AssemblyName>
-    <Name>Stk500v1Pic</Name>
+    <Name>FlasherCore</Name>
     <RootNamespace>Stk500v1Pic</RootNamespace>
     <ToolchainFlavour>Native</ToolchainFlavour>
     <KeepTimersRunning>true</KeepTimersRunning>
@@ -147,7 +147,7 @@
     <Compile Include="settings.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Stk500v1Pic.c">
+    <Compile Include="main.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="stk\stk.c">
