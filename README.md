@@ -49,3 +49,15 @@ PCRIRIRIRIIIRQ - Read device ID
 | Sequence    | Command                  | Example   | Output |
 --------------|--------------------------|-----------|--------|
 | U_aabbccdd_ | Send generic SPI command | Uac530000 | 78     |
+
+# Tested platforms
+FlasherCore successfully tested on
+
+Intermediate microcontrollers:
+* Atmega8
+* Atmega328
+
+Target microcontrollers:
+* Atmega8
+* Atmega328
+* PIC16F628
