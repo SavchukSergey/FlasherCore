@@ -1,6 +1,7 @@
 #include "../settings.h"
 #include <avr/io.h>
 #include <util/delay.h>
+#include "../io/io.c"
 #include "../avr.h"
 #include "stk.h"
 #include "stk_avr.h"
@@ -25,23 +26,23 @@ unsigned char stk_avr_universal(unsigned char a, unsigned char b, unsigned char 
 void stk_avr_start_pmode() {
 	spi_init();
 	// following delays may not work on all targets...
-	avr_pin_reset_output();
-	avr_pin_reset_1();
-	avr_pin_sck_output();
-	avr_pin_sck_0();
+	avr_io_reset_output();
+	avr_io_reset_1();
+	avr_io_sck_output();
+	avr_io_sck_0();
 	_delay_ms(50);
-	avr_pin_reset_0();
+	avr_io_reset_0();
 	_delay_ms(50);
-	avr_pin_miso_input();
-	avr_pin_mosi_output();
+	avr_io_miso_input();
+	avr_io_mosi_output();
 	spi_transaction(0xAC, 0x53, 0x00, 0x00);
 }
 
 void stk_avr_end_pmode() {
-	avr_pin_miso_input();
-	avr_pin_mosi_input();
-	avr_pin_sck_input();
-	avr_pin_reset_input();
+	avr_io_miso_input();
+	avr_io_mosi_input();
+	avr_io_sck_input();
+	avr_io_reset_input();
 }
 
 #define PTIME 30

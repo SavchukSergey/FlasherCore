@@ -1,5 +1,6 @@
 #include "../settings.h"
 #include <util/delay.h>
+#include "../io/io.c"
 #include "stk.h"
 #include "../serial/serial.h"
 #include "stk_pic.h"
@@ -22,9 +23,9 @@ static unsigned char getch() {
 	static char cnt = 0;
 	cnt++;
 	if (cnt & 1) {
-		stk_pin_led_1();
+		stk_io_led_on();
 	} else {
-		stk_pin_led_0();
+		stk_io_led_off();
 	}
 	return serialRead();
 }
@@ -44,9 +45,9 @@ static void breply(unsigned char b) {
 #define PTIME 10
 static void pulse(unsigned char times) {
 	do {
-		stk_pin_led_1();
+		stk_io_led_on();
 		_delay_ms(PTIME);
-		stk_pin_led_0();
+		stk_io_led_off();
 		_delay_ms(PTIME);
 	}
 	while (times--);
@@ -431,16 +432,16 @@ static void avrisp() {
 void stk_setup() {
 	serialBegin(STK_BAUD_RATE);
 	stk_pic_setup();
-	stk_pin_led_output();
+	stk_io_led_output();
 	pulse(2);
 }
 
 void stk_loop() {
 	while (1) {
 		if (serialAvailable()) {
-			stk_pin_led_1();
+			stk_io_led_on();
 			avrisp();
-			stk_pin_led_0();
+			stk_io_led_off();
 		}
 	}
 }

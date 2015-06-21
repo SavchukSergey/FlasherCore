@@ -117,6 +117,15 @@
     <Compile Include="avr.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="io\io.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="io\io_avr.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="io\io_pic.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="pic.c">
       <SubType>compile</SubType>
     </Compile>
@@ -161,6 +170,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="io" />
     <Folder Include="serial" />
     <Folder Include="stk" />
   </ItemGroup>

@@ -1,5 +1,6 @@
 #include "settings.h"
 #include <util/delay.h>
+#include "io/io.c"
 #include "pic.h"
 
 #define PIC_ADDRESS_SPACE_PROGRAM 'P'
@@ -71,22 +72,22 @@ inline void pic_delay_bit() {
 }
 
 inline void pic_send_bit(unsigned char val) {
-	pic_pin_clk_1();
+	pic_io_clk_1();
 	if (val) {
-		pic_pin_data_1();
+		pic_io_data_1();
 	} else {
-		pic_pin_data_0();
+		pic_io_data_0();
 	}
 	pic_delay_bit();
-	pic_pin_clk_0();
+	pic_io_clk_0();
 	pic_delay_bit();
 }
 
 inline unsigned char pic_receive_bit() {
-	pic_pin_clk_1();
+	pic_io_clk_1();
 	pic_wait_dly3();
-	unsigned char val = pic_pin_data_value();
-	pic_pin_clk_0();
+	unsigned char val = pic_io_data_value();
+	pic_io_clk_0();
 	pic_delay_bit();
 	return val;
 }
@@ -96,7 +97,7 @@ static void pic_send_cmd (unsigned char cmd) {
 		pic_send_bit(cmd & 0x01);
 		cmd = cmd >> 1;
 	}
-	pic_pin_data_0();
+	pic_io_data_0();
 	pic_wait_dly2();
 }
 
@@ -107,14 +108,14 @@ static void pic_send_data (unsigned int data) {
 		pic_send_bit(data & 0x01);
 		data = data >> 1;
 	}
-	pic_pin_data_0();
+	pic_io_data_0();
 	pic_wait_dly2();
 }
 
 static unsigned int pic_receive_data () {
 	unsigned int data = 0;
-	pic_pin_data_input();
-	pic_pin_data_0(); //turn off pull-up
+	pic_io_data_input();
+	pic_io_data_0(); //turn off pull-up
 
 	for (unsigned char i = 0; i < 16; i++) {
 		data = data >> 1;
@@ -126,7 +127,7 @@ static unsigned int pic_receive_data () {
 	}
 	data = data >> 1;
 	data = data & 0x3fff;
-	pic_pin_data_output();
+	pic_io_data_output();
 	return data;
 }
 
@@ -177,25 +178,25 @@ void pic_erase_data() {
 }
 
 void pic_setup() {
-	pic_pin_mclr_output();
-	pic_pin_mclr_0();
+	pic_io_mclr_output();
+	pic_io_mclr_off();
 
-	pic_pin_power_output();
-	pic_pin_power_1();
+	pic_io_power_output();
+	pic_io_power_off();
 
-	pic_pin_clk_input();
-	pic_pin_data_input();
+	pic_io_clk_input();
+	pic_io_data_input();
 }
 
 void pic_reset() {
 	pic_setup();
-	pic_pin_clk_output();
-	pic_pin_data_output();
+	pic_io_clk_output();
+	pic_io_data_output();
 
 	_delay_ms(500);
-	pic_pin_mclr_1();
+	pic_io_mclr_on();
 	_delay_us(100);
-	pic_pin_power_0();
+	pic_io_power_on();
 	
 	address = 0;
 	pic_address_space = PIC_ADDRESS_SPACE_PROGRAM;

@@ -3,6 +3,7 @@
 #include <util/delay.h>
 #include "stk.h"
 #include "stk_pic.h"
+#include "../io/io.c"
 #include "../pic.h"
 #include "../serial/serial.h"
 
@@ -35,10 +36,10 @@ void stk_pic_start_pmode() {
 }
 
 void stk_pic_end_pmode() {
-	pic_pin_clk_input();
-	pic_pin_data_input();
-	pic_pin_mclr_0();
-	pic_pin_power_1();
+	pic_io_clk_input();
+	pic_io_data_input();
+	pic_io_mclr_off();
+	pic_io_power_off();
 }
 
 void stk_pic_commit(unsigned int addr) {
@@ -116,16 +117,16 @@ void stk_pic_service() {
 		} else if (ch == 'p') {
 			unsigned char powerPin = serialRead();
 			if (powerPin == '0') {
-				pic_pin_power_0();
+				pic_io_power_off();
 			} else if (powerPin == '1') {
-				pic_pin_power_1();
+				pic_io_power_on();
 			}
 		} else if (ch == 'm') {
 			unsigned char mclrPin = serialRead();
 			if (mclrPin == '0') {
-				pic_pin_mclr_0();
+				pic_io_mclr_off();
 			} else if (mclrPin == '1') {
-				pic_pin_mclr_1();
+				pic_io_mclr_on();
 			}
 		}
 	}

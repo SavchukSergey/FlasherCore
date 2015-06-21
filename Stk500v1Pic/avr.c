@@ -1,9 +1,10 @@
 #include "settings.h"
 #include <util/delay.h>
+#include "io/io.c"
 #include "avr.h"
 
 void spi_init() {
-	avr_pin_ss_output();
+	avr_io_ss_output();
 	
 	unsigned char x;
 	SPCR = 0x53;

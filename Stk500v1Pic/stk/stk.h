@@ -39,25 +39,4 @@ typedef struct param {
 } parameter;
 
 
-
-#define STK_PIN_LED_OR_MASK (1 << STK_PIN_LED_BIT)
-#define STK_PIN_LED_AND_MASK (~STK_PIN_LED_OR_MASK)
-
-
-inline void stk_pin_led_0() {
-	STK_PIN_LED_PORT &= STK_PIN_LED_AND_MASK;
-}
-
-inline void stk_pin_led_1() {
-	STK_PIN_LED_PORT |= STK_PIN_LED_OR_MASK;
-}
-
-inline void stk_pin_led_output() {
-	STK_PIN_LED_DDR |= STK_PIN_LED_OR_MASK;
-}
-
-inline void stk_pin_led_input() {
-	STK_PIN_LED_DDR &= STK_PIN_LED_AND_MASK;
-}
-
 #endif
