@@ -1,14 +1,23 @@
 # FlasherCore
 
-Implementation of STK 500 v1 protocol for programming both Atmega and PIC microcontrollers
+Flasher core is implementation of STK 500 v1 protocol for programming both Atmega and PIC microcontrollers.
+Stk500 protocol implies that you have either intermediate controller or you have a bootloader on target controller. The board must be connected via COM port (physical or virtual).
+
+This protocol was used for programming stk500 boards (1st version) and also is used by arduino boards.
+For more information about protocol see [AVR061](http://www.atmel.com/Images/doc2525.pdf)
+
+# Avr and Pic programming mode
+
+Even though interface between programmer and FlasherCore for both AVR and PIC devices is the same, there is fundamental deifference between how AVR and PIC devices are programmed. FlasherCode must know what is the device family of the target device. This can be done by sending special device code 0x01 when performing "Set Device Parameters" command. You can use [Flasher](https://github.com/SavchukSergey/Flasher) software that sends valid device code if you choose PIC device in its settings.
 
 # Service mode
-This firmware contains special service menu for accessing PIC and AVR devices raw protocol.
-Service menu is available via COM-port.
+This firmware contains special service menu for accessing PIC and AVR devices raw programming protocol.
+
+Service protocol uses textual representation and is available via USART module so you can use any serial monitor available for your operation system.
 
 All data values used as input or as output are specified in hex format: 0-9, A-F, a-f
 
-Enter Service Mode
+There are two different service modes. One for PIC devices and one for AVR devices:
 
 | Sequence  | Target      | Example | Output                  |
 |-----------|-------------|---------|-------------------------|
