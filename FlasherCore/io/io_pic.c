@@ -94,10 +94,10 @@ inline void pic_io_mclr_off() {
 }
 
 inline void pic_io_power_on() {
-	_pic_io_power_0();
+	_pic_io_power_1();
 }
 
 inline void pic_io_power_off() {
-	_pic_io_power_1();
+	_pic_io_power_0();
 }
 

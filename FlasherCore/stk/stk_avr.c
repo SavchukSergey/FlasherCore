@@ -77,12 +77,22 @@ void stk_avr_service() {
 	while (1) {
 		char ch = serialRead();
 		if (ch == 'P') {
+			stk_io_power_on();
+			_delay_ms(100);
 			stk_avr_start_pmode();
 		} else if (ch == 'Q') {
 			stk_avr_end_pmode();
+			stk_io_power_off();
 		} else if (ch == 'E') {
 			serialPrintString("Bye");
 			return;
+		} else if (ch == 'k') {
+			unsigned char powerPin = serialRead();
+			if (powerPin == '0') {
+				stk_io_power_off();
+			} else if (powerPin == '1') {
+				stk_io_power_on();
+			}
 		} else if (ch == ' ') {
 			serialPrint(' ');
 		} else if (ch == 'U') {

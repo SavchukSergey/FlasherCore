@@ -127,6 +127,7 @@ static void stk_set_ext_parameters() {
 }
 
 static void stk_start_pmode() {
+	stk_io_power_on();
 	pulse(5);
 	if (target == STK_TARGET_AVR) {
 		stk_avr_start_pmode();
@@ -143,6 +144,7 @@ static void stk_end_pmode() {
 		stk_pic_end_pmode();
 	}
 	pmode = 0;
+	stk_io_power_off();
 }
 
 static void stk_get_version(unsigned char c) {
@@ -433,6 +435,8 @@ void stk_setup() {
 	serialBegin(STK_BAUD_RATE);
 	stk_pic_setup();
 	stk_io_led_output();
+	stk_io_power_output();
+	stk_io_power_off();
 	pulse(2);
 }
 
