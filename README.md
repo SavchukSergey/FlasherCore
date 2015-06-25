@@ -25,12 +25,13 @@ There are two different service modes. One for PIC devices and one for AVR devic
 | `SA`      | AVR devices | `SA`    | Hello. Avr Service Mode |
 
 ## Common service commands
-| Sequence | Command                          | Example | Output |
-|----------|----------------------------------|---------|--------|
-| `P`      | Start programming mode           | `P`     |        | 
-| `Q`      | Quit programming mode            | `Q`     |        |
-| `E`      | Quit service menu                | `E`     | Bye    |
-| [space]  | Put additional space into output |         |        |
+| Sequence   | Command                          | Example | Output |
+|------------|----------------------------------|---------|--------|
+| `P`        | Start programming mode           | `P`     |        | 
+| `Q`        | Quit programming mode            | `Q`     |        |
+| `E`        | Quit service menu                | `E`     | Bye    |
+| `k1`, `k0` | Turn on/off target device power  | `k0`    |        |
+| [space]    | Put additional space into output |         |        |
 
 ## Pic service commands 
 
