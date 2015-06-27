@@ -28,20 +28,14 @@ void stk_avr_start_pmode() {
 	// following delays may not work on all targets...
 	avr_io_reset_output();
 	avr_io_reset_1();
-	avr_io_sck_output();
-	avr_io_sck_0();
 	_delay_ms(50);
 	avr_io_reset_0();
 	_delay_ms(50);
-	avr_io_miso_input();
-	avr_io_mosi_output();
 	spi_transaction(0xAC, 0x53, 0x00, 0x00);
 }
 
 void stk_avr_end_pmode() {
-	avr_io_miso_input();
-	avr_io_mosi_input();
-	avr_io_sck_input();
+	spi_shutdown();
 	avr_io_reset_input();
 }
 

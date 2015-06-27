@@ -4,12 +4,23 @@
 #include "avr.h"
 
 void spi_init() {
+	avr_io_miso_input();
+	avr_io_mosi_output();
+	avr_io_sck_output();
 	avr_io_ss_output();
-	
+
 	unsigned char x;
 	SPCR = 0x53;
 	x = SPSR;
 	x = SPDR;
+}
+
+void spi_shutdown() {
+	SPCR = 0x00;
+	avr_io_miso_input();
+	avr_io_mosi_input();
+	avr_io_sck_input();
+	avr_io_ss_input();
 }
 
 void spi_wait() {
