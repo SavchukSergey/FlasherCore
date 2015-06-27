@@ -20,13 +20,6 @@ unsigned char target = STK_TARGET_AVR;
 parameter param;
 
 static unsigned char getch() {
-	static char cnt = 0;
-	cnt++;
-	if (cnt & 1) {
-		stk_io_led_on();
-	} else {
-		stk_io_led_off();
-	}
 	return serialRead();
 }
 
@@ -39,18 +32,6 @@ static void breply(unsigned char b) {
 		error++;
 		serialPrint(STK_NOSYNC);
 	}
-}
-
-
-#define PTIME 10
-static void pulse(unsigned char times) {
-	do {
-		stk_io_led_on();
-		_delay_ms(PTIME);
-		stk_io_led_off();
-		_delay_ms(PTIME);
-	}
-	while (times--);
 }
 
 static void empty_reply() {
@@ -128,7 +109,7 @@ static void stk_set_ext_parameters() {
 
 static void stk_start_pmode() {
 	stk_io_power_on();
-	pulse(5);
+	_delay_ms(20);
 	if (target == STK_TARGET_AVR) {
 		stk_avr_start_pmode();
 	} else {
@@ -434,18 +415,14 @@ static void avrisp() {
 void stk_setup() {
 	serialBegin(STK_BAUD_RATE);
 	stk_pic_setup();
-	stk_io_led_output();
 	stk_io_power_output();
 	stk_io_power_off();
-	pulse(2);
 }
 
 void stk_loop() {
 	while (1) {
 		if (serialAvailable()) {
-			stk_io_led_on();
 			avrisp();
-			stk_io_led_off();
 		}
 	}
 }
