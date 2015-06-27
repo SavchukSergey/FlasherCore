@@ -35,18 +35,19 @@ There are two different service modes. One for PIC devices and one for AVR devic
 
 ## Pic service commands 
 
-| Sequence | Command                            | Example | Output |
-|----------|------------------------------------|---------|--------|
-| `C`      | Switch to configuration  space     | `C`     |        |
-| `I`      | Increment address                  | `I`     |        |
-| `R`      | Read program/configuration memory  | `R`     | 3FFF   |
-| `Wxxxx`  | Write program/configuration memory | `W1234` |        |
-| `Gxxxx`  | Go to address                      | `G1234` |        |
-| `A`      | Show current address               | `A`     | C1234  |
-| `p0`     | Set power off                      | `p0`    |        |
-| `p1`     | Set power on                       | `p1`    |        |
-| `m0`     | Set MCLR off                       | `m0`    |        |
-| `m1`     | Set MCLR on                        | `m1`    |        |
+| Sequence | Command                            | Example | Output      |
+|----------|------------------------------------|---------|-------------|
+| `C`      | Switch to configuration  space     | `C`     |             |
+| `I`      | Increment address                  | `I`     |             |
+| `R`      | Read program/configuration memory  | `R`     | 3FFF        |
+| `Wxxxx`  | Write program/configuration memory | `W1234` |             |
+| `Gxxxx`  | Go to address                      | `G1234` |             |
+| `A`      | Show current address               | `A`     | C1234       |
+| `Z`      | Erase chip                         | `Z`     | Chip erased |
+| `p0`     | Set power off                      | `p0`    |             |
+| `p1`     | Set power on                       | `p1`    |             |
+| `m0`     | Set MCLR off                       | `m0`    |             |
+| `m1`     | Set MCLR on                        | `m1`    |             |
 
 ### Popular PIC commands
 

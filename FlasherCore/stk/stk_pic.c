@@ -19,11 +19,15 @@ void stk_pic_read_signature() {
 	serialPrint(STK_OK);
 }
 
+void stk_pic_erase() {
+	pic_erase_program();
+	pic_erase_data();
+}
+
 unsigned char stk_pic_universal(unsigned char a, unsigned char b, unsigned char c, unsigned char d) {
 	if (a == 0xac) {
 		if (b == 0x80) {
-			pic_erase_program();
-			pic_erase_data();
+			stk_pic_erase();
 			return 0;
 		}
 	}
@@ -117,6 +121,9 @@ void stk_pic_service() {
 			serialPrint(sp);
 			unsigned int adr = pic_get_address();
 			stk_print_hex_uint16(adr);
+		} else if (ch == 'Z') {
+			stk_pic_erase();
+			serialPrintString("Chip erased");
 		} else if (ch == 'k') {
 			unsigned char powerPin = serialRead();
 			if (powerPin == '0') {
