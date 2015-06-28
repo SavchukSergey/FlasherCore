@@ -148,6 +148,15 @@ static void stk_get_version(unsigned char c) {
 	}
 }
 
+static void stk_chip_erase() {
+	if (target == STK_TARGET_AVR) {
+		stk_avr_erase();
+	} else {
+		stk_pic_erase();
+	}
+}
+
+
 static void stk_universal() {
 	unsigned char a = serialRead();
 	unsigned char b = serialRead();
@@ -319,11 +328,45 @@ static void stk_service() {
 	unsigned char ch = serialRead();
 	switch (ch) {
 		case 'P':
-			stk_pic_service();
+			target = STK_TARGET_PIC;
+			serialPrintString("Hello. Pic Service Mode ");
 			break;
 		case 'A':
-			stk_avr_service();
+			target = STK_TARGET_AVR;
+			serialPrintString("Hello. Avr Service Mode ");
 			break;
+		default:
+			serialPrintString("Unknown target");
+			return;
+	}
+	
+	while(1) {
+		ch = serialRead();
+		if (ch == 'P') {
+			stk_start_pmode();
+		} else if (ch == 'Q') {
+			stk_end_pmode();
+		} else if (ch == 'E') {
+			serialPrintString("Bye");
+			return;
+		} else if (ch == 'Z') {
+			stk_chip_erase();
+		} else if (ch == ' ') {
+			serialPrint(' ');
+		} else if (ch == 'k') {
+			unsigned char powerPin = serialRead();
+			if (powerPin == '0') {
+				stk_io_power_off();
+			} else if (powerPin == '1') {
+				stk_io_power_on();
+			}
+		} else {
+			if (target == STK_TARGET_AVR) {
+				stk_avr_service(ch);
+			} else {
+				stk_pic_service(ch);
+			}
+		}
 	}
 }
 

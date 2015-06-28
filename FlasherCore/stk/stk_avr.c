@@ -19,6 +19,10 @@ void stk_avr_read_signature() {
 	serialPrint(STK_OK);
 }
 
+void stk_avr_erase() {
+	spi_transaction(0xac, 0x80, 0x00, 0x00);
+}
+
 unsigned char stk_avr_universal(unsigned char a, unsigned char b, unsigned char c, unsigned char d) {
 	return spi_transaction(a, b, c, d);
 }
@@ -65,38 +69,14 @@ void stk_avr_write_flash(unsigned int addr, unsigned int val) {
 	spi_transaction(0x48, addr >> 8 & 0xFF, addr & 0xFF, (unsigned char)(val >> 8));
 }
 
-void stk_avr_service() {
-	serialPrintString("Hello. Avr Service Mode ");
-	
-	while (1) {
-		char ch = serialRead();
-		if (ch == 'P') {
-			stk_io_power_on();
-			_delay_ms(100);
-			stk_avr_start_pmode();
-		} else if (ch == 'Q') {
-			stk_avr_end_pmode();
-			stk_io_power_off();
-		} else if (ch == 'E') {
-			serialPrintString("Bye");
-			return;
-		} else if (ch == 'k') {
-			unsigned char powerPin = serialRead();
-			if (powerPin == '0') {
-				stk_io_power_off();
-			} else if (powerPin == '1') {
-				stk_io_power_on();
-			}
-		} else if (ch == ' ') {
-			serialPrint(' ');
-		} else if (ch == 'U') {
-			spi_init();
-			unsigned char a = serialReadHexUInt8();
-			unsigned char b = serialReadHexUInt8();
-			unsigned char c = serialReadHexUInt8();
-			unsigned char d = serialReadHexUInt8();
-			unsigned char res = spi_transaction(a, b, c, d);
-			serialPrintHexUInt8(res);
-		}
+void stk_avr_service(unsigned char ch) {
+	if (ch == 'U') {
+		spi_init();
+		unsigned char a = serialReadHexUInt8();
+		unsigned char b = serialReadHexUInt8();
+		unsigned char c = serialReadHexUInt8();
+		unsigned char d = serialReadHexUInt8();
+		unsigned char res = spi_transaction(a, b, c, d);
+		serialPrintHexUInt8(res);
 	}
 }

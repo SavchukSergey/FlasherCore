@@ -8,7 +8,7 @@ For more information about protocol see [AVR061](http://www.atmel.com/Images/doc
 
 # Avr and Pic programming mode
 
-Even though interface between programmer and FlasherCore for both AVR and PIC devices is the same, there is fundamental difference between how AVR and PIC devices are programmed. FlasherCode must know what is the device family of the target device. This can be done by sending special device code 0x01 when performing "Set Device Parameters" command. You can use [Flasher](https://github.com/SavchukSergey/Flasher) software that sends valid device code if you choose PIC device in its settings.
+Even though interface between programmer and FlasherCore for both AVR and PIC devices is the same, there is fundamental difference between how AVR and PIC devices are programmed. FlasherCore must know what is the device family of the target device. This can be done by sending special device code 0x01 when performing "Set Device Parameters" command. You can use [Flasher](https://github.com/SavchukSergey/Flasher) software that sends valid device code if you choose PIC device in its settings.
 
 # Service mode
 This firmware contains special service menu for accessing PIC and AVR devices raw programming protocol.
@@ -25,29 +25,29 @@ There are two different service modes. One for PIC devices and one for AVR devic
 | `SA`      | AVR devices | `SA`    | Hello. Avr Service Mode |
 
 ## Common service commands
-| Sequence   | Command                          | Example | Output |
-|------------|----------------------------------|---------|--------|
-| `P`        | Start programming mode           | `P`     |        | 
-| `Q`        | Quit programming mode            | `Q`     |        |
-| `E`        | Quit service menu                | `E`     | Bye    |
-| `k1`, `k0` | Turn on/off target device power  | `k0`    |        |
-| [space]    | Put additional space into output |         |        |
+| Sequence   | Command                          | Example | Output      |
+|------------|----------------------------------|---------|-------------|
+| `P`        | Start programming mode           | `P`     |             | 
+| `Q`        | Quit programming mode            | `Q`     |             |
+| `E`        | Quit service menu                | `E`     | Bye         |
+| `Z`        | Erase chip                       | `Z`     | Chip erased |
+| `k1`, `k0` | Turn on/off target device power  | `k0`    |             |
+| [space]    | Put additional space into output |         |             |
 
 ## Pic service commands 
 
-| Sequence | Command                            | Example | Output      |
-|----------|------------------------------------|---------|-------------|
-| `C`      | Switch to configuration  space     | `C`     |             |
-| `I`      | Increment address                  | `I`     |             |
-| `R`      | Read program/configuration memory  | `R`     | 3FFF        |
-| `Wxxxx`  | Write program/configuration memory | `W1234` |             |
-| `Gxxxx`  | Go to address                      | `G1234` |             |
-| `A`      | Show current address               | `A`     | C1234       |
-| `Z`      | Erase chip                         | `Z`     | Chip erased |
-| `p0`     | Set power off                      | `p0`    |             |
-| `p1`     | Set power on                       | `p1`    |             |
-| `m0`     | Set MCLR off                       | `m0`    |             |
-| `m1`     | Set MCLR on                        | `m1`    |             |
+| Sequence | Command                            | Example | Output |
+|----------|------------------------------------|---------|--------|
+| `C`      | Switch to configuration  space     | `C`     |        |
+| `I`      | Increment address                  | `I`     |        |
+| `R`      | Read program/configuration memory  | `R`     | 3FFF   |
+| `Wxxxx`  | Write program/configuration memory | `W1234` |        |
+| `Gxxxx`  | Go to address                      | `G1234` |        |
+| `A`      | Show current address               | `A`     | C1234  |
+| `p0`     | Set power off                      | `p0`    |        |
+| `p1`     | Set power on                       | `p1`    |        |
+| `m0`     | Set MCLR off                       | `m0`    |        |
+| `m1`     | Set MCLR on                        | `m1`    |        |
 
 ### Popular PIC commands
 

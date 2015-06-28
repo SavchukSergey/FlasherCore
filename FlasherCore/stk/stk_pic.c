@@ -52,7 +52,7 @@ void stk_pic_commit(unsigned int addr) {
 static void stk_pic_go_to(unsigned int addr) {
 	if (addr >= 0x2000) {
 		pic_go_to_config(addr);
-	} else {
+		} else {
 		pic_go_to_program(addr);
 	}
 }
@@ -84,67 +84,40 @@ void stk_print_hex_uint16(unsigned int data) {
 	serialPrintString(" ");
 }
 
-void stk_pic_service() {
-	serialPrintString("Hello. Pic Service Mode ");
-	
-	while (1) {
-		char ch = serialRead();
-		if (ch == 'P') {
-			stk_io_power_on();
-			_delay_ms(100);
-			stk_pic_start_pmode();
-		} else if (ch == 'Q') {
-			stk_pic_end_pmode();
-			stk_io_power_off();
-		} else if (ch == 'E') {
-			serialPrintString("Bye");
-			return;
-		} else if (ch == ' ') {
-			serialPrint(' ');
-		} else if (ch == 'C') {
-			pic_switch_to_config();
-		} else if (ch == 'I') {
-			pic_increment_address();
-		} else if (ch == 'R') {
-			unsigned int data = pic_read_program();
-			stk_print_hex_uint16(data);
-		} else if (ch == 'W') {
-			unsigned int data = serialReadHexUInt16();
-			stk_print_hex_uint16(data);
-			pic_load_program(data);
-			pic_begin_programming();
-		} else if (ch == 'G') {
-			unsigned int adr = serialReadHexUInt16();
-			stk_pic_go_to(adr);
-		} else if (ch == 'A') {
-			unsigned char sp = pic_get_address_space();
-			serialPrint(sp);
-			unsigned int adr = pic_get_address();
-			stk_print_hex_uint16(adr);
-		} else if (ch == 'Z') {
-			stk_pic_erase();
-			serialPrintString("Chip erased");
-		} else if (ch == 'k') {
-			unsigned char powerPin = serialRead();
-			if (powerPin == '0') {
-				stk_io_power_off();
-			} else if (powerPin == '1') {
-				stk_io_power_on();
-			}
-		} else if (ch == 'p') {
-			unsigned char powerPin = serialRead();
-			if (powerPin == '0') {
-				pic_io_power_off();
-			} else if (powerPin == '1') {
-				pic_io_power_on();
-			}
-		} else if (ch == 'm') {
-			unsigned char mclrPin = serialRead();
-			if (mclrPin == '0') {
-				pic_io_mclr_off();
-			} else if (mclrPin == '1') {
-				pic_io_mclr_on();
-			}
+void stk_pic_service(unsigned char ch) {
+	if (ch == 'p') {
+		unsigned char powerPin = serialRead();
+		if (powerPin == '0') {
+			pic_io_power_off();
+		} else if (powerPin == '1') {
+			pic_io_power_on();
 		}
+	} else if (ch == 'm') {
+		unsigned char mclrPin = serialRead();
+		if (mclrPin == '0') {
+			pic_io_mclr_off();
+		} else if (mclrPin == '1') {
+			pic_io_mclr_on();
+		}
+	} else if (ch == 'C') {
+		pic_switch_to_config();
+	} else if (ch == 'I') {
+		pic_increment_address();
+	} else if (ch == 'R') {
+		unsigned int data = pic_read_program();
+		stk_print_hex_uint16(data);
+	} else if (ch == 'W') {
+		unsigned int data = serialReadHexUInt16();
+		stk_print_hex_uint16(data);
+		pic_load_program(data);
+		pic_begin_programming();
+	} else if (ch == 'G') {
+		unsigned int adr = serialReadHexUInt16();
+		stk_pic_go_to(adr);
+	} else if (ch == 'A') {
+		unsigned char sp = pic_get_address_space();
+		serialPrint(sp);
+		unsigned int adr = pic_get_address();
+		stk_print_hex_uint16(adr);
 	}
-} 
+}

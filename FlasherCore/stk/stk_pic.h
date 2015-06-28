@@ -2,7 +2,7 @@
 #define STK_PIC_H_
 
 void stk_pic_setup();
-void stk_pic_service();
+void stk_pic_service(unsigned char ch);
 
 void stk_pic_read_signature();
 unsigned char stk_pic_universal(unsigned char a, unsigned char b, unsigned char c, unsigned char d);
