@@ -1,6 +1,6 @@
 # FlasherCore
 
-FlasheCore is implementation of STK 500 v1 protocol for programming both Atmega and PIC microcontrollers.
+FlasherCore is implementation of STK 500 v1 protocol for programming both Atmega and PIC microcontrollers.
 Stk500 protocol implies that you have either intermediate controller or you have a bootloader on target controller. The board must be connected via COM port (physical or virtual).
 
 This protocol was used for programming stk500 boards (1st version) and also is used by arduino boards.

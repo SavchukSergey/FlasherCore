@@ -4,7 +4,7 @@
 #include "settings.h"
 
 void pic_load_program(unsigned int data);
-void pic_load_data(unsigned char data);
+void pic_load_data(unsigned int data);
 void pic_load_config(unsigned int data);
 
 void pic_begin_programming();

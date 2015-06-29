@@ -136,7 +136,7 @@ void pic_load_program(unsigned int data) {
 	pic_send_data(data);
 }
 
-void pic_load_data(unsigned char data) {
+void pic_load_data(unsigned int data) {
 	pic_send_cmd(0x03);
 	pic_send_data(data);
 }
@@ -168,12 +168,19 @@ unsigned char pic_read_data() {
 }
 
 void pic_erase_program() {
+	if (pic_address_space != PIC_ADDRESS_SPACE_PROGRAM) {
+		pic_reset();
+	}
+	pic_load_program(0x3fff);
 	pic_send_cmd(0x09);
+	pic_begin_programming();
 	pic_wait_erase();
 }
 
 void pic_erase_data() {
+	pic_load_data(0x3fff);
 	pic_send_cmd(0x0b);
+	pic_begin_programming();
 	pic_wait_erase();
 }
 
