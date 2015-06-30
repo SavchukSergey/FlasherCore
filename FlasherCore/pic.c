@@ -39,11 +39,17 @@ void pic_erase_program() {
 	if (pic_address_space != PIC_ADDRESS_SPACE_PROGRAM) {
 		pic_reset();
 	}
+	pic_cmd_load_program(0x3fff);
 	pic_cmd_bulk_erase_program_memory();
+	pic_cmd_begin_programming_only_cycle();
+	pic_wait_erase();
 }
 
 void pic_erase_data() {
+	pic_cmd_load_data(0x3fff);
 	pic_cmd_bulk_erase_data_memory();
+	pic_cmd_begin_programming_only_cycle();
+	pic_wait_erase();
 }
 
 void pic_setup() {

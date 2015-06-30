@@ -160,17 +160,11 @@ void pic_cmd_begin_programming_only_cycle() {
 }
 
 void pic_cmd_bulk_erase_program_memory() {
-	pic_load_program(0x3fff);
 	pic_send_cmd(0x09);
-	pic_begin_programming();
-	pic_wait_erase();
 }
 
 void pic_cmd_bulk_erase_data_memory() {
-	pic_load_data(0x3fff);
 	pic_send_cmd(0x0b);
-	pic_begin_programming();
-	pic_wait_erase();
 }
 
 void pic_cmd_bulk_erase_setup_1() {
