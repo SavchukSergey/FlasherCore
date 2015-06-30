@@ -20,8 +20,7 @@ void stk_pic_read_signature() {
 }
 
 void stk_pic_erase() {
-	pic_erase_program();
-	pic_erase_data();
+	pic_erase();
 }
 
 unsigned char stk_pic_universal(unsigned char a, unsigned char b, unsigned char c, unsigned char d) {
@@ -65,7 +64,7 @@ unsigned int stk_pic_flash_read(unsigned int addr) {
 void stk_pic_write_flash(unsigned int addr, unsigned int val) {
 	stk_pic_go_to(addr);
 	pic_load_program(val);
-	pic_begin_programming();
+	pic_cmd_begin_erase_programming_cycle();
 }
 
 unsigned char stk_pic_eeprom_read(unsigned int addr) {
@@ -76,7 +75,7 @@ unsigned char stk_pic_eeprom_read(unsigned int addr) {
 void stk_pic_write_eeprom(unsigned int addr, unsigned char val) {
 	pic_go_to_data(addr);
 	pic_load_data(val);
-	pic_begin_programming();
+	pic_cmd_begin_erase_programming_cycle();
 }
 
 void stk_print_hex_uint16(unsigned int data) {
@@ -110,7 +109,7 @@ void stk_pic_service(unsigned char ch) {
 		unsigned int data = serialReadHexUInt16();
 		stk_print_hex_uint16(data);
 		pic_load_program(data);
-		pic_begin_programming();
+		pic_cmd_begin_erase_programming_cycle();
 	} else if (ch == 'G') {
 		unsigned int adr = serialReadHexUInt16();
 		stk_pic_go_to(adr);

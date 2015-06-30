@@ -12,24 +12,9 @@ unsigned char pic_address_space;
 
 
 
-
-
-
-void pic_load_program(unsigned int data) {
-	pic_cmd_load_program(data);
-}
-
-void pic_load_data(unsigned int data) {
-	pic_cmd_load_data(data);
-}
-
 void pic_load_config(unsigned int data) {
 	pic_cmd_load_config(data);
 	pic_address_space = PIC_ADDRESS_SPACE_CONFIG;
-}
-
-void pic_begin_programming() {
-	pic_cmd_begin_erase_programming_cycle();
 }
 
 void pic_increment_address() {
@@ -37,12 +22,17 @@ void pic_increment_address() {
 	address++;
 }
 
-unsigned int pic_read_program() {
-	return pic_cmd_read_program();
-}
-
-unsigned char pic_read_data() {
-	return (unsigned char)pic_cmd_read_data();
+void pic_erase() {
+	pic_reset();
+	pic_load_config(0x0000);
+	pic_go_to_config(0x2007);
+	pic_cmd_bulk_erase_setup_1();
+	pic_cmd_bulk_erase_setup_2();
+	pic_cmd_begin_erase_programming_cycle();
+	pic_wait_prog();
+	pic_wait_erase();
+	pic_cmd_bulk_erase_setup_1();
+	pic_cmd_bulk_erase_setup_2();
 }
 
 void pic_erase_program() {
@@ -110,15 +100,7 @@ inline static void pic_enter_low_voltage_program_mode() {
 }
 
 void pic_reset() {
-	pic_setup();
-	pic_io_clk_output();
-	pic_io_data_output();
-
-	_delay_ms(500);
-	pic_io_mclr_on();
-	_delay_us(100);
-	pic_io_power_on();
-	
+	pic_enter_high_voltage_program_mode();
 	address = 0;
 	pic_address_space = PIC_ADDRESS_SPACE_PROGRAM;
 }
@@ -161,4 +143,28 @@ unsigned int pic_get_address() {
 
 unsigned char pic_get_address_space() {
 	return pic_address_space;
+}
+
+unsigned int pic_read_program() {
+	return pic_cmd_read_program();
+}
+
+unsigned char pic_read_data() {
+	return pic_cmd_read_data();
+}
+
+void pic_load_program(unsigned int data) {
+	pic_cmd_load_program(data);
+}
+
+void pic_load_data(unsigned int data) {
+	pic_cmd_load_data(data);
+}
+
+void pic_begin_erase_programming_cycle() {
+	pic_cmd_begin_erase_programming_cycle();
+}
+
+void pic_begin_programming_only_cycle() {
+	pic_cmd_begin_programming_only_cycle();
 }

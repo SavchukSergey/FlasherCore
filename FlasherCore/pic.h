@@ -7,13 +7,15 @@ void pic_load_program(unsigned int data);
 void pic_load_data(unsigned int data);
 void pic_load_config(unsigned int data);
 
-void pic_begin_programming();
+void pic_begin_erase_programming_cycle();
+void pic_begin_programming_only_cycle();
 
 unsigned int pic_read_program();
 unsigned char pic_read_data();
 
 void pic_increment_address();
 
+void pic_erase();
 void pic_erase_program();
 void pic_erase_data();
 

@@ -109,7 +109,7 @@ static unsigned int pic_receive_data () {
 		data = data >> 1;
 		if (pic_receive_bit()) {
 			data |= 0x8000;
-			} else {
+		} else {
 			data &= 0x7fff;
 		}
 	}

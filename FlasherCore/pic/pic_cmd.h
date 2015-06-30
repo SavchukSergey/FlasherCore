@@ -22,4 +22,15 @@ inline static void pic_wait_prog() {
 	_delay_ms(8);
 }
 
+
+//delay between rising Vpp and Vdd
+inline static void pic_wait_ppdp() {
+	_delay_us(5);
+}
+
+inline static void pic_wait_hld0() {
+	_delay_us(5);
+}
+
+
 #endif
