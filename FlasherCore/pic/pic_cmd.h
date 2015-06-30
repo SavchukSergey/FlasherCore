@@ -4,6 +4,9 @@
 #include "../settings.h"
 #include <util/delay.h>
 
+void pic_send_cmd(unsigned char cmd);
+void pic_send_data(unsigned int data);
+unsigned int pic_receive_data();
 
 void pic_cmd_increment_address();
 void pic_cmd_load_program(unsigned int data);

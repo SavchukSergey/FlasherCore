@@ -119,5 +119,14 @@ void stk_pic_service(unsigned char ch) {
 		serialPrint(sp);
 		unsigned int adr = pic_get_address();
 		stk_print_hex_uint16(adr);
+	} else if (ch == 'c') {
+		unsigned char cmd = serialReadHexUInt8();
+		pic_send_cmd(cmd);
+	} else if (ch == 'd') {
+		unsigned char cmdData = serialReadHexUInt16();
+		pic_send_data(cmdData);
+	} else if (ch == 'r') {
+		unsigned char cmdData = pic_receive_data();
+		stk_print_hex_uint16(cmdData);
 	}
 }

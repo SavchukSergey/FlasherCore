@@ -12,12 +12,16 @@ static inline void pic_wait_clock() {
 
 //Data in setup time before clock low
 inline static void pic_wait_set1() {
-	asm("nop"); //100ns
+	//100ns
+	asm("nop");
+	asm("nop");
 }
 
 //Data in hold time after clock low
 static inline void pic_wait_hld1() {
-	asm("nop"); //100ns
+	//100ns
+	asm("nop");
+	asm("nop");
 }
 
 
@@ -33,7 +37,9 @@ static inline void pic_wait_dly2() {
 
 //Clock high to data out valid (during read data)
 inline void pic_wait_dly3() {
-	asm("nop"); //80ns
+	//80ns
+	asm("nop");
+	asm("nop");
 }
 
 static inline void pic_send_bit(unsigned char val) {
@@ -60,7 +66,7 @@ static inline unsigned char pic_receive_bit() {
 	return val;
 }
 
-static void pic_send_cmd(unsigned char cmd) {
+void pic_send_cmd(unsigned char cmd) {
 	for (unsigned char i = 0; i < 6; i++) {
 		pic_send_bit(cmd & 0x01);
 		cmd = cmd >> 1;
@@ -69,7 +75,7 @@ static void pic_send_cmd(unsigned char cmd) {
 	pic_wait_dly2();
 }
 
-static void pic_send_data(unsigned int data) {
+void pic_send_data(unsigned int data) {
 	pic_wait_dly1();
 	data = data & 0x3fff;
 	data = data << 1;
@@ -81,7 +87,7 @@ static void pic_send_data(unsigned int data) {
 	pic_wait_dly2();
 }
 
-static unsigned int pic_receive_data() {
+unsigned int pic_receive_data() {
 	pic_wait_dly1();
 	unsigned int data = 0;
 	pic_io_data_input();

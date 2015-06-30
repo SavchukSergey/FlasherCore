@@ -24,7 +24,7 @@ void pic_increment_address() {
 
 void pic_erase() {
 	pic_reset();
-	pic_load_config(0x0000);
+	pic_load_config(0x3fff);
 	pic_go_to_config(0x2007);
 	pic_cmd_bulk_erase_setup_1();
 	pic_cmd_bulk_erase_setup_2();
@@ -33,6 +33,9 @@ void pic_erase() {
 	pic_wait_erase();
 	pic_cmd_bulk_erase_setup_1();
 	pic_cmd_bulk_erase_setup_2();
+	pic_reset();
+	pic_erase_program();
+	pic_erase_data();
 }
 
 void pic_erase_program() {
@@ -43,6 +46,7 @@ void pic_erase_program() {
 	pic_cmd_bulk_erase_program_memory();
 	pic_cmd_begin_programming_only_cycle();
 	pic_wait_erase();
+	pic_reset();
 }
 
 void pic_erase_data() {
@@ -50,6 +54,7 @@ void pic_erase_data() {
 	pic_cmd_bulk_erase_data_memory();
 	pic_cmd_begin_programming_only_cycle();
 	pic_wait_erase();
+	pic_reset();
 }
 
 void pic_setup() {
