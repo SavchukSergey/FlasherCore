@@ -132,6 +132,12 @@
     <Compile Include="pic.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="pic\pic_cmd.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="pic\pic_cmd.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="serial\ringbuffer.c">
       <SubType>compile</SubType>
     </Compile>
@@ -171,6 +177,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="io" />
+    <Folder Include="pic" />
     <Folder Include="serial" />
     <Folder Include="stk" />
   </ItemGroup>
