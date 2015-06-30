@@ -193,6 +193,48 @@ void pic_setup() {
 
 	pic_io_clk_input();
 	pic_io_data_input();
+	pic_io_pgm_input();
+}
+
+inline static void pic_enter_high_voltage_program_mode() {
+	pic_setup();
+	pic_io_clk_output();
+	pic_io_clk_0();
+	pic_io_data_output();
+	pic_io_data_0();
+	pic_io_power_output();
+	pic_io_power_off();
+	pic_io_mclr_output();
+	pic_io_mclr_off();
+	pic_io_pgm_output();
+	pic_io_pgm_0();
+
+	_delay_ms(50);
+	pic_io_mclr_on();
+	pic_wait_ppdp();
+	pic_io_power_on();
+	pic_wait_hld0();
+}
+
+inline static void pic_enter_low_voltage_program_mode() {
+	pic_setup();
+	pic_io_clk_output();
+	pic_io_clk_0();
+	pic_io_data_output();
+	pic_io_data_0();
+	pic_io_power_output();
+	pic_io_power_off();
+	pic_io_mclr_output();
+	pic_io_mclr_off();
+	pic_io_pgm_output();
+	pic_io_pgm_0();
+
+	_delay_ms(50);
+	pic_io_power_on();
+	pic_wait_ppdp();
+	pic_io_mclr_on();
+	pic_io_pgm_1();
+	pic_wait_hld0();
 }
 
 void pic_reset() {

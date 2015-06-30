@@ -101,3 +101,15 @@ inline void pic_io_power_off() {
 	_pic_io_power_0();
 }
 
+
+inline void pic_io_pgm_0() {
+}
+
+inline void pic_io_pgm_1() {
+}
+
+inline void pic_io_pgm_output() {
+}
+
+inline void pic_io_pgm_input() {
+}

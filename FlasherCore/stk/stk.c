@@ -351,6 +351,7 @@ static void stk_service() {
 			return;
 		} else if (ch == 'Z') {
 			stk_chip_erase();
+			serialPrintString("Chip erased");
 		} else if (ch == ' ') {
 			serialPrint(' ');
 		} else if (ch == 'k') {

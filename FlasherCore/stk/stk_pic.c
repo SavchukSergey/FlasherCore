@@ -52,7 +52,7 @@ void stk_pic_commit(unsigned int addr) {
 static void stk_pic_go_to(unsigned int addr) {
 	if (addr >= 0x2000) {
 		pic_go_to_config(addr);
-		} else {
+	} else {
 		pic_go_to_program(addr);
 	}
 }
