@@ -4,6 +4,16 @@
 #include "../settings.h"
 #include <util/delay.h>
 
+
+void pic_cmd_increment();
+void pic_cmd_load_program(unsigned int data);
+void pic_cmd_load_data(unsigned int data);
+unsigned int pic_cmd_read_program();
+unsigned char pic_cmd_read_data();
+void pic_cmd_begin_erase_programming_cycle();
+void pic_cmd_begin_programming_only_cycle();
+
+
 inline static void pic_wait_erase() {
 	_delay_ms(6);
 }
