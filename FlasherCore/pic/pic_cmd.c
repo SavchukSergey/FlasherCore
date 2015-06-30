@@ -3,62 +3,51 @@
 #include "../io/io.c"
 #include "pic_cmd.h"
 
+//Decrease clock frequency
+inline static void pic_wait_clock() {
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+	asm("nop");
+}
 
-//Delay between clock? to clock? of next command or data
+//Data in setup time before clock low
+inline static void pic_wait_set1() {
+	asm("nop"); //100ns
+}
+
+//Data in hold time after clock low
+inline static void pic_wait_hld1() {
+	asm("nop"); //100ns
+}
+
+
+//Data input not driven to next clock input (delay required between command/data or command/command)
+inline static void pic_wait_dly1() {
+	_delay_us(1);
+}
+
+//Delay between clock low to clock high of next command or data
 inline static void pic_wait_dly2() {
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
+	_delay_us(1);
 }
 
-//Clock? to data out valid (during read data)
+//Clock high to data out valid (during read data)
 inline void pic_wait_dly3() {
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
+	asm("nop"); //80ns
 }
 
-
-
-inline void pic_delay_bit() {
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-}
 inline void pic_send_bit(unsigned char val) {
 	pic_io_clk_1();
 	if (val) {
@@ -66,21 +55,24 @@ inline void pic_send_bit(unsigned char val) {
 	} else {
 		pic_io_data_0();
 	}
-	pic_delay_bit();
+	pic_wait_set1();
+	pic_wait_clock();
 	pic_io_clk_0();
-	pic_delay_bit();
+	pic_wait_hld1();
+	pic_wait_clock();
 }
 
 inline unsigned char pic_receive_bit() {
 	pic_io_clk_1();
 	pic_wait_dly3();
+	pic_wait_clock();
 	unsigned char val = pic_io_data_value();
 	pic_io_clk_0();
-	pic_delay_bit();
+	pic_wait_clock();
 	return val;
 }
 
-static void pic_send_cmd (unsigned char cmd) {
+static void pic_send_cmd(unsigned char cmd) {
 	for (unsigned char i = 0; i < 6; i++) {
 		pic_send_bit(cmd & 0x01);
 		cmd = cmd >> 1;
@@ -89,7 +81,8 @@ static void pic_send_cmd (unsigned char cmd) {
 	pic_wait_dly2();
 }
 
-static void pic_send_data (unsigned int data) {
+static void pic_send_data(unsigned int data) {
+	pic_wait_dly1();
 	data = data & 0x3fff;
 	data = data << 1;
 	for (unsigned char i = 0; i < 16; i++) {
@@ -100,7 +93,8 @@ static void pic_send_data (unsigned int data) {
 	pic_wait_dly2();
 }
 
-static unsigned int pic_receive_data () {
+static unsigned int pic_receive_data() {
+	pic_wait_dly1();
 	unsigned int data = 0;
 	pic_io_data_input();
 	pic_io_data_0(); //turn off pull-up

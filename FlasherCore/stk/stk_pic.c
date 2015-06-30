@@ -5,6 +5,7 @@
 #include "stk_pic.h"
 #include "../io/io.c"
 #include "../pic.h"
+#include "../pic/pic_cmd.h"
 #include "../serial/serial.h"
 
 void stk_pic_setup() {
