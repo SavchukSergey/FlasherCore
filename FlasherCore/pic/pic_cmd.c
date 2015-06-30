@@ -4,22 +4,10 @@
 #include "pic_cmd.h"
 
 //Decrease clock frequency
-inline static void pic_wait_clock() {
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
+static inline void pic_wait_clock() {
+	for (char i=0; i < 10; i++) {
+		asm("nop");
+	}
 }
 
 //Data in setup time before clock low
@@ -28,18 +16,18 @@ inline static void pic_wait_set1() {
 }
 
 //Data in hold time after clock low
-inline static void pic_wait_hld1() {
+static inline void pic_wait_hld1() {
 	asm("nop"); //100ns
 }
 
 
 //Data input not driven to next clock input (delay required between command/data or command/command)
-inline static void pic_wait_dly1() {
+static inline void pic_wait_dly1() {
 	_delay_us(1);
 }
 
 //Delay between clock low to clock high of next command or data
-inline static void pic_wait_dly2() {
+static inline void pic_wait_dly2() {
 	_delay_us(1);
 }
 
@@ -48,7 +36,7 @@ inline void pic_wait_dly3() {
 	asm("nop"); //80ns
 }
 
-inline void pic_send_bit(unsigned char val) {
+static inline void pic_send_bit(unsigned char val) {
 	pic_io_clk_1();
 	if (val) {
 		pic_io_data_1();
@@ -62,7 +50,7 @@ inline void pic_send_bit(unsigned char val) {
 	pic_wait_clock();
 }
 
-inline unsigned char pic_receive_bit() {
+static inline unsigned char pic_receive_bit() {
 	pic_io_clk_1();
 	pic_wait_dly3();
 	pic_wait_clock();
