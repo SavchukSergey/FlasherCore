@@ -109,7 +109,7 @@ static void stk_set_ext_parameters() {
 
 static void stk_start_pmode() {
 	stk_io_power_on();
-	_delay_ms(20);
+	_delay_ms(100);
 	if (target == STK_TARGET_AVR) {
 		stk_avr_start_pmode();
 	} else {
