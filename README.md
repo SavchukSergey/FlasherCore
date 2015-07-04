@@ -48,6 +48,9 @@ There are two different service modes. One for PIC devices and one for AVR devic
 | `p1`     | Set power on                       | `p1`    |        |
 | `m0`     | Set MCLR off                       | `m0`    |        |
 | `m1`     | Set MCLR on                        | `m1`    |        |
+| `cxx`    | Send raw pic command               | `c00`   |        |
+| `dxxxx`  | Send raw pic data                  | `d1234` |        |
+| `r`      | Receive raw pic data               | `r`     | 1234   |
 
 ### Popular PIC commands
 
