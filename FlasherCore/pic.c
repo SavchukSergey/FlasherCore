@@ -24,18 +24,9 @@ void pic_increment_address() {
 
 void pic_erase() {
 	pic_reset();
-	pic_load_config(0x3fff);
-	pic_go_to_config(0x2007);
-	pic_cmd_bulk_erase_setup_1();
-	pic_cmd_bulk_erase_setup_2();
-	pic_cmd_begin_erase_programming_cycle();
-	pic_wait_prog();
-	pic_wait_erase();
-	pic_cmd_bulk_erase_setup_1();
-	pic_cmd_bulk_erase_setup_2();
-	pic_reset();
 	pic_erase_program();
 	pic_erase_data();
+	pic_reset();
 }
 
 void pic_erase_program() {
@@ -170,10 +161,6 @@ void pic_load_program(unsigned int data) {
 
 void pic_load_data(unsigned int data) {
 	pic_cmd_load_data(data);
-}
-
-void pic_begin_erase_programming_cycle() {
-	pic_cmd_begin_erase_programming_cycle();
 }
 
 void pic_begin_programming_only_cycle() {

@@ -136,14 +136,8 @@ unsigned char pic_cmd_read_data() {
 	return (unsigned char)pic_receive_data();
 }
 
-void pic_cmd_begin_erase_programming_cycle() {
-	pic_send_cmd(0x08);
-	pic_wait_prog();
-	pic_wait_erase();
-}
-
 void pic_cmd_begin_programming_only_cycle() {
-	pic_send_cmd(0x18);
+	pic_send_cmd(0x08);
 	pic_wait_prog();
 }
 
@@ -153,12 +147,4 @@ void pic_cmd_bulk_erase_program_memory() {
 
 void pic_cmd_bulk_erase_data_memory() {
 	pic_send_cmd(0x0b);
-}
-
-void pic_cmd_bulk_erase_setup_1() {
-	pic_send_cmd(0x01);
-}
-
-void pic_cmd_bulk_erase_setup_2() {
-	pic_send_cmd(0x07);
 }

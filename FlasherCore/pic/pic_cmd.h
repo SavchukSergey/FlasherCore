@@ -14,10 +14,7 @@ void pic_cmd_load_data(unsigned int data);
 void pic_cmd_load_config(unsigned int data);
 unsigned int pic_cmd_read_program();
 unsigned char pic_cmd_read_data();
-void pic_cmd_begin_erase_programming_cycle();
 void pic_cmd_begin_programming_only_cycle();
-void pic_cmd_bulk_erase_setup_1();
-void pic_cmd_bulk_erase_setup_2();
 void pic_cmd_bulk_erase_program_memory();
 void pic_cmd_bulk_erase_data_memory();
 
