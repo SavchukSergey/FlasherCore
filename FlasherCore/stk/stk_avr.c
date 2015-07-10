@@ -5,18 +5,18 @@
 #include "../avr.h"
 #include "stk.h"
 #include "stk_avr.h"
-#include "../serial/serial.h"
+#include "../serial/stream.h"
 
 
 void stk_avr_read_signature() {
-	serialPrint(STK_INSYNC);
+	streamWriteChar(STK_INSYNC);
 	unsigned char high = spi_transaction(0x30, 0x00, 0x00, 0x00);
-	serialPrint((char) high);
+	streamWriteChar((unsigned char) high);
 	unsigned char middle = spi_transaction(0x30, 0x00, 0x01, 0x00);
-	serialPrint((char) middle);
+	streamWriteChar((unsigned char) middle);
 	unsigned char low = spi_transaction(0x30, 0x00, 0x02, 0x00);
-	serialPrint((char) low);
-	serialPrint(STK_OK);
+	streamWriteChar((unsigned char) low);
+	streamWriteChar(STK_OK);
 }
 
 void stk_avr_erase() {
@@ -72,11 +72,11 @@ void stk_avr_write_flash(unsigned int addr, unsigned int val) {
 void stk_avr_service(unsigned char ch) {
 	if (ch == 'U') {
 		spi_init();
-		unsigned char a = serialReadHexUInt8();
-		unsigned char b = serialReadHexUInt8();
-		unsigned char c = serialReadHexUInt8();
-		unsigned char d = serialReadHexUInt8();
+		unsigned char a = streamReadHexUInt8();
+		unsigned char b = streamReadHexUInt8();
+		unsigned char c = streamReadHexUInt8();
+		unsigned char d = streamReadHexUInt8();
 		unsigned char res = spi_transaction(a, b, c, d);
-		serialPrintHexUInt8(res);
+		streamPrintHexUInt8(res);
 	}
 }

@@ -6,18 +6,18 @@
 #include "../io/io.c"
 #include "../pic.h"
 #include "../pic/pic_cmd.h"
-#include "../serial/serial.h"
+#include "../serial/stream.h"
 
 void stk_pic_setup() {
 	pic_setup();
 }
 
 void stk_pic_read_signature() {
-	serialPrint(STK_INSYNC);
-	serialPrint(PIC_SIGNATURE_HIGH);
-	serialPrint(PIC_SIGNATURE_MIDDLE);
-	serialPrint(PIC_SIGNATURE_LOW);
-	serialPrint(STK_OK);
+	streamWriteChar(STK_INSYNC);
+	streamWriteChar(PIC_SIGNATURE_HIGH);
+	streamWriteChar(PIC_SIGNATURE_MIDDLE);
+	streamWriteChar(PIC_SIGNATURE_LOW);
+	streamWriteChar(STK_OK);
 }
 
 void stk_pic_erase() {
@@ -80,20 +80,20 @@ void stk_pic_write_eeprom(unsigned int addr, unsigned char val) {
 }
 
 void stk_print_hex_uint16(unsigned int data) {
-	serialPrintHexUInt16(data);
-	serialPrintString(" ");
+	streamPrintHexUInt16(data);
+	streamPrintString(" ");
 }
 
 void stk_pic_service(unsigned char ch) {
 	if (ch == 'p') {
-		unsigned char powerPin = serialRead();
+		unsigned char powerPin = streamReadChar();
 		if (powerPin == '0') {
 			pic_io_power_off();
 		} else if (powerPin == '1') {
 			pic_io_power_on();
 		}
 	} else if (ch == 'm') {
-		unsigned char mclrPin = serialRead();
+		unsigned char mclrPin = streamReadChar();
 		if (mclrPin == '0') {
 			pic_io_mclr_off();
 		} else if (mclrPin == '1') {
@@ -107,22 +107,22 @@ void stk_pic_service(unsigned char ch) {
 		unsigned int data = pic_read_program();
 		stk_print_hex_uint16(data);
 	} else if (ch == 'W') {
-		unsigned int data = serialReadHexUInt16();
+		unsigned int data = streamReadHexUInt16();
 		pic_load_program(data);
 		pic_cmd_begin_programming_only_cycle();
 	} else if (ch == 'G') {
-		unsigned int adr = serialReadHexUInt16();
+		unsigned int adr = streamReadHexUInt16();
 		stk_pic_go_to(adr);
 	} else if (ch == 'A') {
 		unsigned char sp = pic_get_address_space();
-		serialPrint(sp);
+		streamWriteChar(sp);
 		unsigned int adr = pic_get_address();
 		stk_print_hex_uint16(adr);
 	} else if (ch == 'c') {
-		unsigned char cmd = serialReadHexUInt8();
+		unsigned char cmd = streamReadHexUInt8();
 		pic_send_cmd(cmd);
 	} else if (ch == 'd') {
-		unsigned char cmdData = serialReadHexUInt16();
+		unsigned char cmdData = streamReadHexUInt16();
 		pic_send_data(cmdData);
 	} else if (ch == 'r') {
 		unsigned char cmdData = pic_receive_data();

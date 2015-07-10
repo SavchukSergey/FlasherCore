@@ -3,8 +3,10 @@
 #include "../io/io.c"
 #include "stk.h"
 #include "../serial/serial.h"
+#include "../serial/stream.h"
 #include "stk_pic.h"
 #include "stk_avr.h"
+#include "../utils.h"
 
 #define EECHUNK (32)
 
@@ -19,12 +21,9 @@ unsigned char target = STK_TARGET_AVR;
 
 parameter param;
 
-static unsigned char getch() {
-	return serialRead();
-}
 
 static void breply(unsigned char b) {
-	if (CRC_EOP == getch()) {
+	if (CRC_EOP == streamReadChar()) {
 		serialPrint(STK_INSYNC);
 		serialPrint(b);
 		serialPrint(STK_OK);
@@ -35,7 +34,7 @@ static void breply(unsigned char b) {
 }
 
 static void empty_reply() {
-	if (CRC_EOP == getch()) {
+	if (CRC_EOP == streamReadChar()) {
 		serialPrint(STK_INSYNC);
 		serialPrint(STK_OK);
 	} else {
@@ -45,7 +44,7 @@ static void empty_reply() {
 }
 
 static void stk_read_signature() {
-	if (CRC_EOP != getch()) {
+	if (CRC_EOP != streamReadChar()) {
 		error++;
 		serialPrint(STK_NOSYNC);
 	} else {
@@ -57,39 +56,21 @@ static void stk_read_signature() {
 	}
 }
 
-static unsigned int stk_read_beget16() {
-	unsigned int res = serialRead();
-	res <<= 8;
-	res |= serialRead();
-	return res;
-}
-
-static unsigned long stk_read_beget32() {
-	unsigned long res = serialRead();
-	res <<= 8;
-	res |= serialRead();
-	res <<= 8;
-	res |= serialRead();
-	res <<= 8;
-	res |= serialRead();
-	return res;
-}
-
 static void stk_set_parameters() {
-	param.devicecode = serialRead();
-	param.revision   = serialRead();
-	param.progtype   = serialRead();
-	param.parmode    = serialRead();
-	param.polling    = serialRead();
-	param.selftimed  = serialRead();
-	param.lockbytes  = serialRead();
-	param.fusebytes  = serialRead();
-	param.flashpoll  = serialRead();
-	serialRead();
-	param.eeprompoll = stk_read_beget16();
-	param.pagesize   = stk_read_beget16();
-	param.eepromsize = stk_read_beget16();
-	param.flashsize = stk_read_beget32();
+	param.devicecode = streamReadChar();
+	param.revision   = streamReadChar();
+	param.progtype   = streamReadChar();
+	param.parmode    = streamReadChar();
+	param.polling    = streamReadChar();
+	param.selftimed  = streamReadChar();
+	param.lockbytes  = streamReadChar();
+	param.fusebytes  = streamReadChar();
+	param.flashpoll  = streamReadChar();
+	streamReadChar();
+	param.eeprompoll = streamReadBeInt16();
+	param.pagesize   = streamReadBeInt16();
+	param.eepromsize = streamReadBeInt16();
+	param.flashsize = streamReadBeInt32();
 	empty_reply();
 	
 	if (param.devicecode == 0x01) {
@@ -100,9 +81,9 @@ static void stk_set_parameters() {
 }
 
 static void stk_set_ext_parameters() {
-	unsigned char len = serialRead();
+	unsigned char len = streamReadChar();
 	for (unsigned char i = 1; i < len; i++) {
-		serialRead();
+		streamReadChar();
 	}
 	empty_reply();
 }
@@ -158,10 +139,10 @@ static void stk_chip_erase() {
 
 
 static void stk_universal() {
-	unsigned char a = serialRead();
-	unsigned char b = serialRead();
-	unsigned char c = serialRead();
-	unsigned char d = serialRead();
+	unsigned char a = streamReadChar();
+	unsigned char b = streamReadChar();
+	unsigned char c = streamReadChar();
+	unsigned char d = streamReadChar();
 
 	unsigned char res;
 	
@@ -206,8 +187,8 @@ static unsigned char stk_write_flash(unsigned int length) {
 			stk_commit(page);
 			page = stk_current_page(here);
 		}
-		unsigned int val = serialRead();
-		val |= serialRead() * 256;
+		unsigned int val = streamReadChar();
+		val |= streamReadChar() * 256;
 		x += 2;
 		stk_flash(here, val);
 		here++;
@@ -251,9 +232,8 @@ static unsigned char stk_write_eeprom(unsigned int length) {
 
 static void stk_program_page() {
 	unsigned char result = STK_FAILED;
-	unsigned int length = 256 * getch();
-	length += getch();
-	unsigned char memtype = getch();
+	unsigned int length = streamReadBeInt16();
+	unsigned char memtype = streamReadChar();
 	if (memtype == 'F') {
 		result = stk_write_flash(length);
 	} else if (memtype == 'E') {
@@ -262,7 +242,7 @@ static void stk_program_page() {
 		serialPrint(STK_FAILED);
 		return;
 	}
-	if (CRC_EOP == getch()) {
+	if (CRC_EOP == streamReadChar()) {
 		serialPrint(STK_INSYNC);
 		serialPrint(result);
 	} else {
@@ -310,10 +290,9 @@ static unsigned char stk_eeprom_read_page(unsigned int length) {
 
 static void stk_read_page() {
 	unsigned char result = STK_FAILED;
-	unsigned int length = 256 * getch();
-	length += getch();
-	unsigned char memtype = getch();
-	if (CRC_EOP != getch()) {
+	unsigned int length = streamReadBeInt16();
+	unsigned char memtype = streamReadChar();
+	if (CRC_EOP != streamReadChar()) {
 		error++;
 		serialPrint(STK_NOSYNC);
 	} else {
@@ -325,18 +304,18 @@ static void stk_read_page() {
 }
 
 static void stk_service() {
-	unsigned char ch = serialRead();
+	unsigned char ch = streamReadChar();
 	switch (ch) {
 		case 'P':
 			target = STK_TARGET_PIC;
-			serialPrintString("Hello. Pic Service Mode ");
+			streamPrintString("Hello. Pic Service Mode ");
 			break;
 		case 'A':
 			target = STK_TARGET_AVR;
-			serialPrintString("Hello. Avr Service Mode ");
+			streamPrintString("Hello. Avr Service Mode ");
 			break;
 		default:
-			serialPrintString("Unknown target");
+			streamPrintString("Unknown target");
 			return;
 	}
 	
@@ -347,11 +326,11 @@ static void stk_service() {
 		} else if (ch == 'Q') {
 			stk_end_pmode();
 		} else if (ch == 'E') {
-			serialPrintString("Bye");
+			streamPrintString("Bye");
 			return;
 		} else if (ch == 'Z') {
 			stk_chip_erase();
-			serialPrintString("Chip erased");
+			streamPrintString("Chip erased");
 		} else if (ch == ' ') {
 			serialPrint(' ');
 		} else if (ch == 'k') {
@@ -361,6 +340,12 @@ static void stk_service() {
 			} else if (powerPin == '1') {
 				stk_io_power_on();
 			}
+		} else if (ch == 't') {
+			unsigned int micros = streamReadDecimal();
+			delay_us(micros);
+		} else if (ch == 'T') {
+			unsigned int millis = streamReadDecimal();
+			delay_ms(millis);
 		} else {
 			if (target == STK_TARGET_AVR) {
 				stk_avr_service(ch);
@@ -372,21 +357,21 @@ static void stk_service() {
 }
 
 static void avrisp() {
-	unsigned char ch = getch();
+	unsigned char ch = streamReadChar();
 	switch (ch) {
 		case '0':
 			error = 0;
 			empty_reply();
 			break;
 		case '1':
-			if (getch() == CRC_EOP) {
+			if (streamReadChar() == CRC_EOP) {
 				serialPrint(STK_INSYNC);
-				serialPrintString("AVR ISP PIC");
+				streamPrintString("AVR ISP PIC");
 				serialPrint(STK_OK);
 			}
 			break;
 		case 'A':
-			stk_get_version(getch());
+			stk_get_version(streamReadChar());
 			break;
 		case 'B':
 			stk_set_parameters();
@@ -399,18 +384,17 @@ static void avrisp() {
 			empty_reply();
 			break;
 		case 'U': // set address (word)
-			here = getch();
-			here += 256 * getch();
+			here = streamReadLeInt16();
 			empty_reply();
 			break;
 
 		case 0x60: //STK_PROG_FLASH
-			getch(); //low
-			getch(); //high
+			streamReadChar(); //low
+			streamReadChar(); //high
 			empty_reply();
 			break;
 		case 0x61: //STK_PROG_DATA
-			getch(); //data
+			streamReadChar(); //data
 			empty_reply();
 			break;
 
@@ -449,7 +433,7 @@ static void avrisp() {
 		// anything else we will return STK_UNKNOWN
 		default:
 			error++;
-			if (CRC_EOP == getch())
+			if (CRC_EOP == streamReadChar())
 				serialPrint(STK_UNKNOWN);
 			else
 				serialPrint(STK_NOSYNC);

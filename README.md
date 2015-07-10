@@ -33,6 +33,8 @@ There are two different service modes. One for PIC devices and one for AVR devic
 | `Z`        | Erase chip                       | `Z`     | Chip erased |
 | `k1`, `k0` | Turn on/off target device power  | `k0`    |             |
 | [space]    | Put additional space into output |         |             |
+| `tx!`      | Delay x microseconds             | `t1234! |             |
+| `Tx!`      | Delay x milliseconds             | `T1234! |             |
 
 ## Pic service commands 
 

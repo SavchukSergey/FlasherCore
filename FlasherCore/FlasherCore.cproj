@@ -150,6 +150,12 @@
     <Compile Include="serial\serial.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="serial\stream.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="serial\stream.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="settings.h">
       <SubType>compile</SubType>
     </Compile>
@@ -172,6 +178,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="stk\stk_pic.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="utils.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="utils.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>
