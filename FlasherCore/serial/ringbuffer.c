@@ -2,9 +2,11 @@
 #include <util/atomic.h>
 
 void ring_buffer_reset(ringbuffer* buffer) {
-	buffer->head = 0;
-	buffer->tail = 0;
-	buffer->size = 0;
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+		buffer->head = 0;
+		buffer->tail = 0;
+		buffer->size = 0;
+	}
 }
 
 void ring_buffer_queue(ringbuffer* buffer, unsigned char val) {

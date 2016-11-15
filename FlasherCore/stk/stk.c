@@ -297,8 +297,11 @@ static void stk_read_page() {
 		serialPrint(STK_NOSYNC);
 	} else {
 		serialPrint(STK_INSYNC);
-		if (memtype == 'F') result = stk_flash_read_page(length);
-		if (memtype == 'E') result = stk_eeprom_read_page(length);
+		if (memtype == 'F') {
+			result = stk_flash_read_page(length);
+		} else if (memtype == 'E') {
+			result = stk_eeprom_read_page(length);
+		}
 		serialPrint(result);
 	}
 }

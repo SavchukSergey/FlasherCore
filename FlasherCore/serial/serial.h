@@ -20,6 +20,7 @@ void serialPrint(unsigned char chr);
 #define RXC RXC0
 #define UCSZ0 UCSZ00
 #define UCSRA UCSR0A
+#define U2X U2X0
 #define UDR UDR0
 #define UDRE UDRE0
 #define RXCIE RXCIE0

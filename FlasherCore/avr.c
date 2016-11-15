@@ -28,11 +28,9 @@ void spi_wait() {
 }
 
 unsigned char spi_send(unsigned char b) {
-	unsigned char reply;
 	SPDR = b;
 	spi_wait();
-	reply = SPDR;
-	return reply;
+	return SPDR;
 }
 
 unsigned char spi_transaction(unsigned char a, unsigned char b, unsigned char c, unsigned char d) {

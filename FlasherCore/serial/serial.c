@@ -9,7 +9,18 @@ ringbuffer receiveBuffer;
 ringbuffer transmitBuffer;
 
 void serialBegin(unsigned int baudRate) {
-	unsigned int ubbrValue = lrint((F_CPU / (16ul * baudRate)) - 1);
+	#ifdef U2X
+	unsigned int ubbrValue = (2 * F_CPU / (8ul * baudRate));
+	UCSRA = 1 << U2X;
+	#else
+	unsigned int ubbrValue = (2 * F_CPU / (16ul * baudRate));
+	#endif
+	
+	if (ubbrValue & 1) {
+		ubbrValue++;
+	}
+	ubbrValue >>= 1;
+	ubbrValue--;
 
 	#ifndef URSEL
 	UBRR = ubbrValue;
