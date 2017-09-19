@@ -5,7 +5,7 @@
 
 //Decrease clock frequency
 static inline void pic_wait_clock() {
-	for (char i=0; i < 10; i++) {
+	for (char i = 0; i < 10; i++) {
 		asm("nop");
 	}
 }

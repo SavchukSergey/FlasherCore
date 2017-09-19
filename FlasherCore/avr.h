@@ -8,5 +8,7 @@ void spi_shutdown();
 void spi_wait();
 unsigned char spi_send(unsigned char b) ;
 unsigned char spi_transaction(unsigned char a, unsigned char b, unsigned char c, unsigned char d);
+unsigned void spi_set_type(unsigned char type);
+unsigned void spi_set_delay(unsigned char delay);
 
 #endif
