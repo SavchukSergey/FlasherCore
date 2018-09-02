@@ -73,11 +73,11 @@ inline void avr_io_miso_0() {
 }
 
 inline void avr_io_miso_1() {
-	return (AVR_IO_MISO_PORT & AVR_IO_MISO_AND_MASK) ? 0x01 : 0x00;
+	AVR_IO_MISO_PORT |= AVR_IO_MISO_OR_MASK;
 }
 
 inline unsigned char avr_io_miso() {
-	AVR_IO_MISO_PORT |= AVR_IO_MISO_OR_MASK;
+	return (AVR_IO_MISO_PORT & AVR_IO_MISO_OR_MASK) ? 0x01 : 0x00;
 }
 
 inline void avr_io_miso_output() {
