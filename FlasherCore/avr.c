@@ -75,10 +75,18 @@ unsigned char spi_transaction(unsigned char a, unsigned char b, unsigned char c,
 	return spi_send(d);
 }
 
-unsigned void spi_set_type(unsigned char type) {
+unsigned char spi_transaction2(unsigned char a, unsigned char b, unsigned char c, unsigned char d) {
+	spi_send(a);
+	spi_send(b);
+	unsigned char ch = spi_send(c);
+	spi_send(d);
+	return ch;
+}
+
+void spi_set_type(unsigned char type) {
 	avr_spi_type = type;
 }
 
-unsigned void spi_set_delay(unsigned char delay) {
+void spi_set_delay(unsigned char delay) {
 	avr_spi_delay = delay;
 }
