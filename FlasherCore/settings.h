@@ -3,8 +3,13 @@
 
 #include <avr/io.h>
 
+#ifndef F_CPU
 #define F_CPU 16000000UL
+#endif
+
+#ifndef STK_BAUD_RATE
 #define STK_BAUD_RATE 57600
+#endif
 
 #define STK_IO_POWER_PORT PORTD
 #define STK_IO_POWER_DDR DDRD
