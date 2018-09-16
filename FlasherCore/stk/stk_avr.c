@@ -28,14 +28,24 @@ unsigned char stk_avr_universal(unsigned char a, unsigned char b, unsigned char 
 }
 
 void stk_avr_start_pmode() {
+	stk_io_power_off();
 	spi_init();
-	// following delays may not work on all targets...
 	avr_io_reset_output();
-	avr_io_reset_1();
-	_delay_ms(50);
 	avr_io_reset_0();
-	_delay_ms(50);
-	spi_transaction(0xAC, 0x53, 0x00, 0x00);
+	avr_io_sck_output();
+	avr_io_sck_0();
+	_delay_ms(5);
+	stk_io_power_on();
+	_delay_ms(30);
+
+	unsigned char sync = spi_transaction2(0xAC, 0x53, 0x00, 0x00);
+	if (sync != 0x53) {
+		avr_io_reset_1();
+		_delay_ms(5);
+		avr_io_reset_0();
+		_delay_ms(5);
+		spi_transaction2(0xAC, 0x53, 0x00, 0x00);
+	}
 }
 
 void stk_avr_end_pmode() {

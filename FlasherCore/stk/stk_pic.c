@@ -36,6 +36,8 @@ unsigned char stk_pic_universal(unsigned char a, unsigned char b, unsigned char 
 }
 
 void stk_pic_start_pmode() {
+	stk_io_power_on();
+	_delay_ms(100);
 	pic_reset();
 }
 
